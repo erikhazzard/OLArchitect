@@ -25,6 +25,10 @@ try{
 //
 //============================================================================
 OLArchitect.models.Map = Backbone.Model.extend({
+    //Name of this model (we'll use it when creating form elements,
+    //  among other things)
+    name: 'map',
+
     //Set defaults.  Properties correspond to OpenLayers' Map class
     defaults: {
         allOverlays: undefined,

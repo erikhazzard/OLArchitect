@@ -70,7 +70,7 @@ OLArchitect.views.App = Backbone.View.extend({
 
         //Manually empty the configuration wrapper, in case the other views
         //  haven't been defined yet
-        $('#configuration_options').empty();
+        $('.configuration_options').css('display', 'none');
 
         //Call undrender() of each view, but make sure the view exists first
         if(OLArchitect.views.map_view !== undefined){
@@ -114,6 +114,7 @@ OLArchitect.views.App = Backbone.View.extend({
                 = new OLArchitect.views[target_view[0].toUpperCase()
                     + target_view.substring(1)](); 
         }
+        //Render the target view
         OLArchitect.views[target_view + '_view'].render();
     },
 
@@ -141,7 +142,7 @@ OLArchitect.views.App = Backbone.View.extend({
 OLArchitect.views.Map = Backbone.View.extend({
     //The Map, Layers, and Controls views will all be rendered
     //  to the same element (and destroyed on unrender)
-    el: '#configuration_options',
+    el: '#configuration_options_map',
 
     //-----------------------------------
     //Events:
@@ -158,11 +159,6 @@ OLArchitect.views.Map = Backbone.View.extend({
     },
 
     //-----------------------------------
-    //Specify the model for this view
-    //-----------------------------------
-    model: new OLArchitect.models.Map(),
-
-    //-----------------------------------
     //Initialize
     //-----------------------------------
     //  Do some initialization stuff.  Bind this context to the views and set
@@ -173,15 +169,24 @@ OLArchitect.views.Map = Backbone.View.extend({
             'hover_li', 'unhover_li', 
             'update_data');
 
+
+        //-----------------------------------
+        //Specify the model for this view
+        //-----------------------------------
+        if(this.model === undefined){
+            this.model = new OLArchitect.models.Map();
+        }
+
         //Whenever this model changes, call this.render
         this.model.bind('change', this.render);
-
     },
 
     //-----------------------------------
     //Render function
     //-----------------------------------
     render: function(){
+        //Show this element
+        $(this.el).css('display', 'block');
         //We need to create input elements for each key/value pair
         //  in the model
    
@@ -223,7 +228,6 @@ OLArchitect.views.Map = Backbone.View.extend({
         //Create a new variable key by accessing a nonexistent (yet) property
         //  and passing in the element's value
         temp_obj[e.currentTarget['name']] = e.currentTarget.value;
-        console.log(temp_obj);
         
         //Now, update the model and set the key:value we just defined above
         this.model.set(temp_obj);
@@ -253,7 +257,7 @@ OLArchitect.views.Map = Backbone.View.extend({
 OLArchitect.views.Layers = Backbone.View.extend({
     //The Map, Layers, and Controls views will all be rendered
     //  to the same element (and destroyed on unrender)
-    el: '#configuration_options',
+    el: '#configuration_options_layers',
 
     //-----------------------------------
     //Events:
@@ -289,28 +293,30 @@ OLArchitect.views.Layers = Backbone.View.extend({
             );
 
         //Specify the collection (the layers of this map)
-        this.collection = new OLArchitect.models.Layers.Collection();
+        if(this.collection === undefined){
+            this.collection = new OLArchitect.models.Layers.Collection();
+
+            //By default, create a new Google layer and add it to the layer list
+            var google_layer = new OLArchitect.models.Layers.Google();
+            this.collection.add(google_layer);
+        }
 
         //Add some events to the collection
         this.collection.bind('add', this.add_layer);
         this.collection.bind('remove', this.remove_layer);
 
-        //By default, create a new Google layer and add it to the layer list
-        var google_layer = new OLArchitect.models.Layers.Google();
-        this.collection.add(google_layer);
-
         //Whenever this model changes, call this.render
         //this.model.bind('change', this.render);
-
-
     },
 
     //-----------------------------------
     //Render function
     //-----------------------------------
     render: function(){
-        //First, clear the HTML
+        //Show this element
+        $(this.el).css('display', 'block');
 
+        $(this.el).append("<div id='form_wrapper_layers'></div>");
         //Call the generate_code function, which will generate
         //  code based on the user's current configuration.
         //  Note: This render() function gets called every time the
@@ -347,7 +353,6 @@ OLArchitect.views.Layers = Backbone.View.extend({
         //Create a new variable key by accessing a nonexistent (yet) property
         //  and passing in the element's value
         temp_obj[e.currentTarget['name']] = e.currentTarget.value;
-        console.log(temp_obj);
         
         //Now, update the model and set the key:value we just defined above
         this.model.set(temp_obj);

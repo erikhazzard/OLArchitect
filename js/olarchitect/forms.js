@@ -38,6 +38,11 @@ OLArchitect.functions.generate_form = function( params ){
     //  containing the form element.  It will then be .join('')'ed at the
     //  end of this function and returned.
     var output_array = [];
+            
+    //Variables we'll use later
+    var cur_el_id = undefined,
+        cur_obj = undefined,
+        cur_el_html = undefined;
 
     //Just do some tests to make sure this function was properly called
     if(params === undefined){
@@ -66,6 +71,9 @@ OLArchitect.functions.generate_form = function( params ){
     //Set up form elements based on the schema
     //
     //-----------------------------------
+    //Add a wrapper div
+    output_array.push("<div id='form_wrapper_" + model.name + "'>");
+
     //NOTE: Each input / select elemented generated must have a name
     //  property which is equal to the current key (attribute) being
     //  looped on
@@ -75,12 +83,10 @@ OLArchitect.functions.generate_form = function( params ){
         if(model.schema.hasOwnProperty(attr)){
             //Go through each item in the schema.  If a property is not defined
             //  in the schema, we won't create an element for it.
-            var cur_el_id = model.cid + "_" + attr;
+            cur_el_id = model.cid + "_" + attr;
             //Get a reference to the current object we're looping on
-            var cur_obj = model.schema[attr];
-
-
-            var cur_el_html = '<li id="li_' 
+            cur_obj = model.schema[attr];
+            cur_el_html = '<li id="li_' 
                 + cur_el_id + '" ';
             
             //Schema can also contain "headers", which are like labels
@@ -238,6 +244,8 @@ OLArchitect.functions.generate_form = function( params ){
             output_array.push(cur_el_html);
         }
     }
+    //After all elements have been added, close the wrapping div
+    output_array.push('</div>');
 
     //---------------------------
     //Turn the output array to a string and return it

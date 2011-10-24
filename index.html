@@ -66,14 +66,30 @@
 
                     <!-- Current Editing Content -->
                     <div id='configuration_options_wrapper'>
-                        <div id='configuration_options'>
-                            <!-- View HTML Goes here-->
+                        <div id='configuration_options_base'
+                            class='configuration_options'>
                             <!-- Placeholder text -->
                             <h3>
                             Get started by clicking on a button above to
                             configure your map
                             </h3>
+
+                            <li class='config_item_container button big flag'>
+                                <span class='config_item_title'>
+                                    Layer Name
+                                </span>
+                                <div class='config_item_remove'></div>
+                            </il>
                         </div>
+                        <!-- Map Wrapper -->
+                        <div id='configuration_options_map'
+                            class='configuration_options'></div>
+                        <!-- Layers Wrapper -->
+                        <div id='configuration_options_layers'
+                            class='configuration_options'></div>
+                        <!-- Controls Wrapper -->
+                        <div id='configuration_options_controls'
+                            class='configuration_options'></div>
                     </div>    
 
                     <!-- Configuation Buttons (TODO: Is this needed since 

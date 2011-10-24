@@ -21,9 +21,9 @@
 /*Styles*/
 @light_box_shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
 .rounded_corners(@radius: 3px){
-    border-radius: @radius;
-    -webkit-border-radius: @radius;
-    -moz-border-radius: @radius;
+    border-radius: @radius !important;
+    -webkit-border-radius: @radius !important;
+    -moz-border-radius: @radius !important;
 }
 
 /* Layout Related */
@@ -270,7 +270,7 @@ input:focus, textarea:focus {
                 background: -webkit-gradient(linear,0% 40%,0% 70%,from(#F5F5F5),to(#e7e7e7)) ;
                 background: -moz-linear-gradient(linear,0% 40%,0% 70%,from(#F5F5F5),to(#e7e7e7)) ;
                 font-size:1.1em;
-                font-weight:normal;
+                font-weight:bold;
             }
 
         /* ==================================
@@ -287,8 +287,9 @@ input:focus, textarea:focus {
             right:0;
             top: @left_toolbox_tabs_height + 5;
         }
-            #configuration_options {
+            .configuration_options {
                 bottom:0;
+                display: none;
                 left:0;
                 overflow:auto;
                 padding: 5px;
@@ -296,11 +297,12 @@ input:focus, textarea:focus {
                 right:0;
                 top:0;
             }
-            #configuration_options ul {
+            
+            .configuration_options ul {
                 margin:0;
                 padding:0;
             }
-            #configuration_options li {
+            .configuration_options li {
                 border:1px solid  @inner_content_background_color;
                 height:36px;
                 list-style: none;
@@ -310,7 +312,7 @@ input:focus, textarea:focus {
                 position:relative;
                 width:100%;
             }
-                #configuration_options li label{
+                .configuration_options li label{
                     border-right: 1px solid @inner_content_grey_border;
                     cursor: pointer;
                     display: block;
@@ -319,9 +321,9 @@ input:focus, textarea:focus {
                     text-align: right;
                     width: @config_label_width;
                 }
-                #configuration_options li input,
-                #configuration_options li select,
-                #configuration_options li textarea {
+                .configuration_options li input,
+                .configuration_options li select,
+                .configuration_options li textarea {
                     bottom:3px;
                     left: @config_label_width + 30px;
                     position:absolute;
@@ -330,13 +332,13 @@ input:focus, textarea:focus {
                 }
 
                 /* Style for item hover */
-                #configuration_options .hover {
+                .configuration_options .hover {
                     background: #eaeaea;
                     border: 1px solid @inner_content_grey_border;
                 }
 
                 /* Header item style */
-                #configuration_options .header_item {
+                .configuration_options .header_item {
                     -webkit-box-shadow: 0 1px 3px rgba(0,0,0,.5) !important;
                     -moz-box-shadow: 0 1px 3px rgba(0,0,0,.5) !important;
                     box-shadow: 0 1px 3px rgba(0,0,0,.5) !important;
@@ -349,12 +351,12 @@ input:focus, textarea:focus {
                     height:26px !important;
                     text-shadow: 0 0 1px @color_black !important;
                 }
-                    #configuration_options .header_item h3 {
+                    .configuration_options .header_item h3 {
                         padding: 0 0 0 10px !important;
                     }
 
                 /* Help item style */
-                #configuration_options span.help {
+                .configuration_options span.help {
                     color: #808080 !important;
                     font-size: .8em !important;
                     margin:0 !important;
@@ -363,6 +365,33 @@ input:focus, textarea:focus {
                     right:3px;
                     top:8px;
                 }
+
+                /*Set up styles for individual configuration item containers,
+                 *  for example an individual layer in the layer list */
+                .config_item_container {
+                    .rounded_corners(6px);
+                    height: 30px !important;
+                    font-size:1em !important;
+                    margin:.5em 0 .5em 5% !important;
+                    padding: 5px 0 0 0 !important;
+                    width:88% !important;
+                }
+                    .config_item_container .config_item_title {
+                        padding:0 10px;
+                    }
+                    .config_item_container .config_item_remove {
+                        background: url(../img/destroy.png) no-repeat 0 0;
+                        height:20px;
+                        position:absolute;
+                        right:10px;
+                        top:7px;
+                        width:20px;
+                    }
+
+            /*The default / base window will show welcome / help text*/
+            #configuration_options_base {
+                display: block;
+            }
 
     /* =====================================================================
      *

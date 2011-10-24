@@ -29,6 +29,8 @@ OLArchitect.models.Layers.Collection = Backbone.Collection.extend({
 //
 //============================================================================
 OLArchitect.models.Layers.Google = Backbone.Model.extend({
+    name: 'layers',
+
     //Set defaults.  Properties correspond to OpenLayers' Map class
     defaults: {
         //Blah
