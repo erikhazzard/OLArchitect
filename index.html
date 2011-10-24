@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang='en'>
+<head>
+    <!-- This application can also be used offline.  
+    TODO: Add app cache to head:  manifest='cache.appcache' -->
+    <meta charset='uft-8'>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+
+    <title>OpenLayers Architect</title>
+
+    <!-- Styles -->
+    <!-- <link rel='stylesheet' href='css/style.css' /> -->
+    <!-- TODO: Use node to compile LESSCSS css file -->
+    <link rel='stylesheet/less' type='text/css' href='css/style.less' />
+
+    <!-- Syntax highlighter -->
+    <link href="css/shCoreRDark.css" rel="stylesheet" type="text/css" />
+    <link href="css/shThemeRDark.css" rel="stylesheet" type="text/css" />
+
+
+    <script src='js/libs/less/less.js'></script>
+
+</head>
+<body>
+<!-- =====================================================================
+    Site Wrapper
+     ===================================================================== -->
+<div id='site_wrapper'>
+    <!-- ================================
+         Header
+         ================================ -->
+    <div id='header_wrapper'>
+        <div id='header'>
+            <h1>OpenLayers Architect</h1>
+        </div>
+    </div>
+    
+    <!-- ================================
+         Content
+         ================================ -->
+    <div id='content_wrapper'>
+        <div id='content'>
+            <!-- ========================
+                 Container for editing tabs 
+                 ======================== -->
+            <div id='left_toolbox_wrapper'>
+                <div id='left_toolbox'>
+                    <!-- Tabs -->
+                    <div id='tabs_wrapper'>
+                        <ul id='tabs'>
+                            <li id='config_map'
+                                class='button'>
+                                Map
+                            </li>
+                            <li id='config_layers'
+                                class='button'>
+                                Layers                                
+                            </li> 
+                            <li id='config_controls'
+                                class='button'>
+                                Controls
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Current Editing Content -->
+                    <div id='configuration_options_wrapper'>
+                        <div id='configuration_options'>
+                            <!-- View HTML Goes here-->
+                            <!-- Placeholder text -->
+                            <h3>
+                            Get started by clicking on a button above to
+                            configure your map
+                            </h3>
+                        </div>
+                    </div>    
+
+                    <!-- Configuation Buttons (TODO: Is this needed since 
+                        map code is updated on each element's change event?) -->
+                    <!--
+                    <div id='configuration_buttons_wrapper'>
+                        <div id='configuration_buttons'>
+                            <a class='button big save-big'>Save</a>
+                            <a class='button big flag-big'>Reset Values</a>
+                        </div>
+                    </div>
+                    -->
+                </div>
+            </div>
+
+
+            <!-- ========================
+                 Container for Map Code / OL Map
+                 ======================== -->
+            <div id='generated_output_wrapper'>
+                <div id='generated_output'>
+                    <!-- Code output -->
+                    <div id='code_output_wrapper'>
+                        <div id='code_output_header'>
+                            <h2>Generated Output</h2>
+
+                            <!-- Select code button -->
+                            <a id='select_code'
+                                class='button'>
+                                Select Code
+                            </a>
+                        </div>
+                        <div id='code_wrapper'>
+                            <!-- Generated code will appear in the 'code' 
+                                pre element -->
+                            <pre id='code' class='brush: js; toolbar: false;'></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================================
+         Footer
+         ================================ -->
+    <div id='footer_wrapper'>
+        <div id='footer'>
+            <span class='email'>
+                liamg [ta] 1xeone
+            </span>
+            <br />
+            github | vasir.net
+        </div>
+    </div>
+</div>
+
+<!-- =====================================================================
+
+     Javascript
+
+     ===================================================================== -->
+<!-- Third Party Scripts -->
+<script src='js/libs/jquery.js'></script>
+<script src='js/libs/underscore.js'></script>
+<script src='js/libs/json2.js'></script>
+<script src='js/libs/backbone.js'></script>
+
+<!-- Combined -->
+<!-- <script src='js/libs/third_party_combined.js'></script> -->
+
+<!-- Syntax Highlighting -->
+<script src='js/libs/syntaxhighlight/shCore.js'></script>
+<script src='js/libs/syntaxhighlight/shBrushJScript.js'></script>
+<script src='js/libs/syntaxhighlight/shBrushXml.js'></script>
+
+
+<!-- ====================================
+     OLArchitect
+     ==================================== -->
+<!-- TODO: Use google closure to compile all scripts into one -->
+<script src='js/olarchitect/main.js'></script>
+<script src='js/olarchitect/forms.js'></script>
+<script src='js/olarchitect/models_map.js'></script>
+<script src='js/olarchitect/models_layers.js'></script>
+<script src='js/olarchitect/views.js'></script>
+<script src='js/olarchitect/generate_code.js'></script>
+
+<!-- ====================================
+     Google Chrome Frame for IE6
+     ==================================== -->
+<!--[if lt IE 7 ]>
+    <script src="//ajax.googleapis.com/ajax/libs/chrome-frame/1.0.3/CFInstall.min.js"></script>
+    <script>window.attachEvent('onload',function(){CFInstall.check({mode:'overlay'})})</script>
+<![endif]-->
+</body>
+</html>
