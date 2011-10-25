@@ -35,6 +35,10 @@ OLArchitect.functions.generate_code = function(app_object){
     //This will be the string we get from joining the final output 
     var final_output_string = '';
 
+    var map_models = app_object.collection.models[0].get('map').models;
+    var layer_models = app_object.collection.models[0].get('layers').models;
+    var control_models = app_object.collection.models[0].get('controls').models;
+
     //-----------------------------------
     //
     //Check for Third Party API requirements
@@ -42,6 +46,10 @@ OLArchitect.functions.generate_code = function(app_object){
     //-----------------------------------
     //We need to first check if user has requested a google, osm, bing, etc.
     //  map so we can add the third party API script here
+    //Check for GOOGLE MAPS
+    for(var item in layer_models){
+        console.log(layer_models[item].get('type'));
+    }
     final_output.push("<script src='third_party_api.js'></script>");
 
     //-----------------------------------

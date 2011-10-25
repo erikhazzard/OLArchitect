@@ -63,35 +63,51 @@ OLArchitect.views.classes.App = Backbone.View.extend({
             //TODO: Load from a config file?
             //Setup starting settings, such as adding a google map layer
             //
-            //Setup the map object
+            //Setup the MAP
             //--------------------
             OLArchitect.models.objects.map = 
                 new OLArchitect.models.classes.Map.Collection()
+
+            //Setup the view object
+            OLArchitect.views.objects.map.collection 
+                = new OLArchitect.views.classes.Map.Collection(); 
 
             //Add a single map object to the map collection.  Note:
             //  we only use one model object for the map configuration settings
             OLArchitect.models.objects.map.add(
                 new OLArchitect.models.classes.Map.Map());
 
-            //Setup the controls object 
+            //Setup the CONTROLS
             //--------------------
             OLArchitect.models.objects.controls = 
                 new OLArchitect.models.classes.Controls.Collection()
+            //Setup the view object
+            OLArchitect.views.objects.controls.collection 
+                = new OLArchitect.views.classes.Controls.Collection(); 
 
-            //Setup the layers object 
+            //Setup the LAYERS
             //--------------------
+            //Setup the model
             OLArchitect.models.objects.layers = 
                 new OLArchitect.models.classes.Layers.Collection()
+            //Setup the view object
+            OLArchitect.views.objects.layers.collection 
+                = new OLArchitect.views.classes.Layers.Collection(); 
 
-            //Add a google maps layer to it
-            OLArchitect.models.objects.layers.add(
-                new OLArchitect.models.classes.Layers.Google());
-
+            //Set up THIS Application's collection object.  It contains
+            //  models which we'll use throughout the application
             this.collection.add(new OLArchitect.models.classes.App.App({
                 controls: OLArchitect.models.objects.controls,
                 map: OLArchitect.models.objects.map,
                 layers: OLArchitect.models.objects.layers
             }));
+
+            //---------------------------
+            //Now, add some default layers / controls
+            //---------------------------
+            //Add a google maps layer 
+            OLArchitect.models.objects.layers.add(
+                new OLArchitect.models.classes.Layers.Google());
 
         }
         //We're done loading default values
@@ -113,7 +129,7 @@ OLArchitect.views.classes.App = Backbone.View.extend({
         //  element, currentTarget would point to the bound parent element and
         //  target would point to the child element.  We don't want that
         //  behavior here)
-        $('#' + e.currentTarget.id).addClass('tab_active');
+        $(e.currentTarget).addClass('tab_active');
 
         //Manually empty the configuration wrapper, in case the other views
         //  haven't been defined yet
@@ -148,21 +164,8 @@ OLArchitect.views.classes.App = Backbone.View.extend({
         //Now we need to create a view if one hasn't been created yet,
         //  and call render() of the target view
 
-        //See if a view has already been created
-        if(OLArchitect.views.objects[target_view].collection === undefined){
-            //The corresponding View class is just the capitalized version
-            //  of the target_view string.  e.g., the map view class is called
-            //  Map, the layers the Layers, the controls is Controls
-            //So, we just need set the current target view object equal to a 
-            //  new instance of the target_view's class (e.g., if target_view
-            //  is 'map', the corresponding code will compile like
-            //      OLArchitect.views.map_view = OlArchitect.views.Map();
-            OLArchitect.views.objects[target_view].collection
-                = new OLArchitect.views.classes[target_view[0].toUpperCase()
-                    + target_view.substring(1)].Collection(); 
-        }
-    
-        //Render the target view
+        //NOTE: All the collection views have been created, so we can
+        //  render the target view
         OLArchitect.views.objects[target_view].collection.render();
     },
 

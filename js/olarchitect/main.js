@@ -101,12 +101,12 @@ OLArchitect = {
             //  / layers
             Controls: {
                 Collection: undefined,
-                OverviewMap: undefined
+                Control: undefined
                 //etc...
             },
             Layers: {
                 Collection: undefined,
-                GoogleMap: undefined
+                Layer: undefined
                 //etc...
             },
             Map: {

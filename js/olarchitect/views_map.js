@@ -117,9 +117,9 @@ OLArchitect.views.classes.Map.Collection = Backbone.View.extend({
         //Add the 'hover' class to the currentTarget element.
         //  (See the App class' unrender() for an explanation why we use
         //  currentTarget vs. target or other properties
-        $('#' + e.currentTarget.id).addClass('hover');
+        $(e.currentTarget).addClass('hover');
     },
     unhover_li: function(e){
-        $('#' + e.currentTarget.id).removeClass('hover');
+        $(e.currentTarget).removeClass('hover');
     }
 })

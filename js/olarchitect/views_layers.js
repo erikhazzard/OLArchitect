@@ -18,6 +18,8 @@ OLArchitect.views.classes.Layers.Collection = Backbone.View.extend({
     events: {
         'mouseenter li': 'hover_li',
         'mouseleave li': 'unhover_li',
+        'mouseenter .config_item_container': 'hover_config_item',
+        'mouseleave .config_item_container': 'unhover_config_item',
 
         'change input': 'update_data',
         'change select': 'update_data',
@@ -37,11 +39,12 @@ OLArchitect.views.classes.Layers.Collection = Backbone.View.extend({
     initialize: function(){
         //Bind this context, pass in all of this view's functions
         _.bindAll(this, 'render', 'unrender', 
-            'hover_li', 'unhover_li', 
             'update_data',
             'change_layer_order',
             'generate_item_container_html',
-            'add_layer', 'remove_layer'
+            'add_layer', 'remove_layer',
+            'hover_li', 'unhover_li', 
+            'hover_config_item', 'unhover_config_item'
             );
 
         //Specify the collection (the layers of this map)
@@ -66,12 +69,17 @@ OLArchitect.views.classes.Layers.Collection = Backbone.View.extend({
         //  that represents an individual item (item being a layer or control).
         //Clicking on the individual item will show full details for that
         //  layer or control
-        var ret_html = "<li class='config_item_container button big flag'>"
+        var ret_html = "<div class='config_item_container button'>"
             +   "<span class='config_item_title'>"
-            +       item.get('type') 
-            +    "</span>"
-            +    "<div class='config_item_remove'></div>"
-            + "</li>";
+            +       item.get('name') 
+            +   "</span>"
+            +   "<li class='config_item_remove'></li>"
+            +   "<div class='config_item_inner_wrapper'>"
+            +       "<div id='config_item_inner_"
+            //Use cid, since the object does not yet have a real ID
+            +           item.cid + "' ></div>"
+            +   "</div>"   
+            +"</div>";
         return ret_html;
     },
 
@@ -90,10 +98,10 @@ OLArchitect.views.classes.Layers.Collection = Backbone.View.extend({
         //Create the base and overlay labels and append them to the
         //  newly created element (above)
         $('#form_wrapper_layers').append("<div id='base_layers'>"
-            +   "<li class='header_item'>Base Layers</li>"
+            +   "<li class='header_item'><h3>Base Layers</h3></li>"
             + "</div>");
         $('#form_wrapper_layers').append("<div id='overlay_layers'>"
-            +   "<li class='header_item'>Overlay Layers</li>"
+            +   "<li class='header_item'><h3>Overlay Layers</h3></li>"
             + "</div>");
         //For each layer in the collection, create some html elements
         _(this.collection.models).each(function(item){
@@ -139,29 +147,51 @@ OLArchitect.views.classes.Layers.Collection = Backbone.View.extend({
     },
 
     //-----------------------------------
+    //Layer Collection functions
+    //-----------------------------------
+    add_layer: function(item){
+        //This function is called whenever a layer object is added to
+        //  the Layers collection (this.collection).
+        //
+        //First, we need to create a view for the individual layer
+        var temp_view = new OLArchitect.views.classes.Layers.Layer({
+            model: item
+        });
+    },
+    remove_layer: function(){
+        console.log('removed');
+    },
+
+    change_layer_order: function(){
+
+    },
+
+    //-----------------------------------
     //DOM Element Events Functions
     //-----------------------------------
     hover_li: function(e){
         //Add the 'hover' class to the currentTarget element.
         //  (See the App class' unrender() for an explanation why we use
         //  currentTarget vs. target or other properties
-        $('#' + e.currentTarget.id).addClass('hover');
+        $(e.currentTarget).addClass('hover');
     },
     unhover_li: function(e){
-        $('#' + e.currentTarget.id).removeClass('hover');
+        $(e.currentTarget).removeClass('hover');
     },
-
-    //-----------------------------------
-    //Layer Collection functions
-    //-----------------------------------
-    change_layer_order: function(){
-
+    hover_config_item: function(e){
+        $(e.currentTarget).addClass('hover');
     },
-    add_layer: function(layer_object){
-        //This function adds a layer object to the Layers collection
-        console.log('added');
-    },
-    remove_layer: function(){
-        console.log('removed');
+    unhover_config_item: function(e){
+        $(e.currentTarget).removeClass('hover');
     }
 })
+
+//============================================================================
+//
+//
+//Individual Layer View (e.g.,settings for a single google layer)
+//
+//
+//============================================================================
+OLArchitect.views.classes.Layers.Layer = Backbone.View.extend({
+});

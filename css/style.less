@@ -18,7 +18,12 @@
 @inner_content_background_color: #fdfdfd;
 @inner_content_grey_border: #d7d7d7;
 
-@normal_font: 'Cantarell';
+@normal_font: 'Cantarell', Arial, Verdana, sans-serif;
+.normal_button_background(){
+    background: #dedede;
+    background: -webkit-gradient(linear, left top, left bottom, from(#f0f0f0), to(#d1d1d1));
+    background: -moz-linear-gradient(top, #f0f0f0, #d1d1d1);
+}
 
 /*Styles*/
 @light_box_shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
@@ -54,7 +59,7 @@ html, body {
     background:#f4f4f4 url(../img/bg_squares.png);
     bottom:0;
     color: @color_black;
-    font-family:@normal_font, Arial, Verdana, sans-serif; 
+    font-family:@normal_font;
     left:0;
     margin:0;
     padding:0;
@@ -314,6 +319,7 @@ input:focus, textarea:focus {
                 position:relative;
                 width:100%;
             }
+                /* Labels for each input element */
                 .configuration_options li label{
                     border-right: 1px solid @inner_content_grey_border;
                     cursor: pointer;
@@ -350,10 +356,11 @@ input:focus, textarea:focus {
                     background: -moz-linear-gradient(top, #446380, #3c5a76);
                     border: 1px solid #344e66 !important;
                     color: #f7f7f7 !important;
-                    height:26px !important;
+                    height:30px !important;
                     text-shadow: 0 0 1px @color_black !important;
                 }
                     .configuration_options .header_item h3 {
+                        font-family: @normal_font;
                         padding: 0 0 0 10px !important;
                     }
 
@@ -372,25 +379,57 @@ input:focus, textarea:focus {
                  *  for example an individual layer in the layer list */
                 .config_item_container {
                     .rounded_corners(6px);
-                    height: 30px !important;
+                    height: auto !important;
                     font-size:1em !important;
                     margin:.5em 0 .5em 5% !important;
+                    min-height:32px !important;
                     padding: 5px 0 0 0 !important;
+                    position:relative;
                     width:88% !important;
                 }
                     .config_item_container .config_item_title {
                         padding:0 10px;
                     }
-                    .config_item_container .config_item_remove {
-                        background: url(../img/destroy.png) no-repeat 0 0;
-                        height:20px;
-                        position:absolute;
-                        right:10px;
-                        top:7px;
-                        width:20px;
-                    }
+                        .config_item_container .config_item_remove {
+                            background: url(../img/destroy.png) no-repeat 0 0;
+                            border: none !important;
+                            height:20px;
+                            margin: 0 !important;
+                            padding: 0 !important;
+                            position:absolute;
+                            right:10px;
+                            top:7px;
+                            width:20px;
+                        }
+                        .config_item_container .config_item_remove:hover {
+                            background: url(../img/destroy.png) no-repeat 0 -20px !important;
+                        }
 
-            /*The default / base window will show welcome / help text*/
+            /* =================================================
+            /* Content for the config items inner content - 
+             * meaning, individual layers or control
+             * ================================================= */
+            .config_item_inner_wrapper {
+                background: #f2f2f2;
+                display: none;
+                border:1px solid #cdcdcd;
+                font-size:.9em;
+                margin:2px 5px 5px 5px;
+                padding:4px;
+                position:relative;
+            }
+                .config_item_container.hover {
+                    color: #111;
+                    border:1px solid #ababab !important;
+                    -moz-box-shadow: 0 0 7px rgba(0, 0, 0, 0.4);
+                    -webkit-box-shadow: 0 0 7px rgba(0, 0, 0, 0.4);
+                    box-shadow: 0 0 7px rgba(0, 0, 0, 0.4);
+                    .normal_button_background;
+                }
+
+            /* =================================================
+             * The default / base window will show welcome / help text
+             * ================================================= */
             #configuration_options_base {
                 display: block;
             }
@@ -506,6 +545,9 @@ input:focus, textarea:focus {
         text-align: right;
         top:0;
     }
+        #footer a:hover {
+            text-shadow: 0 0 1px #000000 !important;
+        }
         #footer .email {
             unicode-bidi: bidi-override;
             direction: rtl;
@@ -542,7 +584,7 @@ input:focus, textarea:focus {
     padding-bottom: 20px;
     clear: both;
 }
-a.button, li.button, .help {
+a.button, li.button, .help, .button {
     border-radius: 2px;
     -webkit-border-radius: 2px;
     -moz-border-radius: 2px;
@@ -570,18 +612,14 @@ a.button, li.button, .help {
 
 
     /* Darker buttons */
-    background: #dedede;
-    background: -webkit-gradient(linear, left top, left bottom, from(#f0f0f0), to(#d1d1d1));
-    background: -moz-linear-gradient(top, #f0f0f0, #d1d1d1);
+    .normal_button_background;
 }
-a.button:hover, li.button:hover, .button_hover {
+a.button:hover, li.button:hover, .button_hover, .hover {
     color: #111;
     border-color: #999;
     -moz-box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
     -webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-
-
 }
 a.button:active, li.button:active, .tab_active {
     color: #000 !important;

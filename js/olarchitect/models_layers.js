@@ -16,6 +16,7 @@ OLArchitect.models.classes.Layers.Google = Backbone.Model.extend({
 
     //Set defaults.  Properties correspond to OpenLayers' Map class
     defaults: {
+        name: 'Google Layer',
         type: 'Google',
         //Blah
     }
@@ -23,10 +24,11 @@ OLArchitect.models.classes.Layers.Google = Backbone.Model.extend({
 });
 
 OLArchitect.models.classes.Layers.OSM = Backbone.Model.extend({
-    type: 'OSM',
     //Set defaults.  Properties correspond to OpenLayers' Map class
     defaults: {
         //Blah
+        name: 'Open Street Map',
+        type: 'OSM',
     }
 
 });
