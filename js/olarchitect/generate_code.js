@@ -18,7 +18,7 @@ try{
 //Generate Code Function
 //
 //============================================================================
-OLArchitect.functions.generate_code = function(){
+OLArchitect.functions.generate_code = function(app_object){
     //This will generate code based on the Map, Layers, and Controls models 
     //  and collections.  It will output the code to the $('#code') element
     //NOTE: All <'s and >'s must be escaped for the code to properly output.
@@ -52,9 +52,58 @@ OLArchitect.functions.generate_code = function(){
     final_output.push("<script>");
 
 
+    //-----------------------------------
+    //
+    //First, build the MAP object
+    //
+    //-----------------------------------
+    final_output.push('//---------------------------------------');
+    final_output.push('//Define a global object so we can access the map state outside the init function');
+    final_output.push('//---------------------------------------');
+    final_output.push('var MAP_APP = { ');
+    final_output.push('\tmap: undefined, ');
+    final_output.push('\tinit_function: undefined');
+    final_output.push('};');
+    final_output.push('');
     final_output.push('//---------------------------------------');
     final_output.push('//Setup our map code');
     final_output.push('//---------------------------------------');
+    final_output.push('//Create a function that will setup the map.  Call this function to create your map');
+    final_output.push('//\te.x.: MAP_APP.init_function();');
+    final_output.push('');
+    final_output.push('MAP_FUNCTION.init_function = function(){');
+    final_output.push('\t//Create a local map object');
+    final_output.push('\tvar map_object = new OpenLayers.Map({');
+    final_output.push('\t\t//Define map options');
+    //Get MAP config string
+    //This may look a little intimidating, but it's not too complex:
+    //  -app_object is the passed in app view
+    //      -collection is the collection of models that the app view owns (for now,
+    //      only one model will exist within it)
+    //          -models[0] is accessing the first (and for now only) model of
+    //          the app collection
+    //              -get('map') is getting the map collection object
+    //                  -models[0] is getting the first (and only) model object
+    //                  of the map collection
+    //                      -generate_html(2) calls the generate_html() function
+    //                      of the model object and passes in 2, which is the
+    //                      number of tabs we want to prepend to the generated
+    //                      HTML
+    final_output.push(app_object.collection.models[0].get('map').models[0].generate_html(2));
+    
+    //Finish off the options
+    final_output.push('\t});');
+
+    final_output.push("\t//We just created a local map object, so now we will create a reference to it in our");
+    final_output.push("\t//\tgloabl MAP_APP object so we can access it outside of this function");
+    final_output.push('\tMAP_APP.map = map_object;');
+    
+
+    //-----------------------------------
+    //
+    //Add LAYERS
+    //
+    //-----------------------------------
 
     //-----------------------------------
     //
@@ -62,6 +111,7 @@ OLArchitect.functions.generate_code = function(){
     //
     //-----------------------------------
     //We're done with our code, so end the script tag
+    final_output.push('');
     final_output.push("</script>");
     final_output_string = final_output.join('\n');
     //Escape < and >

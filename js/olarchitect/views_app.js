@@ -7,24 +7,13 @@
  *
  * ======================================================================== */
 //============================================================================
-//Make sure the models object exist
-//============================================================================
-try{
-    OLArchitect.views = {};
-}catch(err){ OLArchitect.views = {}; }
-
-
-//============================================================================
-//
-//Configure Views 
-//
-//============================================================================
-//============================================================================
 //
 //App View
 //
 //============================================================================
-OLArchitect.views.App = Backbone.View.extend({
+//Note: The initialize() function contains the heart of the app setup, which
+//  loads the app configuration
+OLArchitect.views.classes.App = Backbone.View.extend({
     //The app lives in the body tag
     el: 'body',
     
@@ -48,16 +37,67 @@ OLArchitect.views.App = Backbone.View.extend({
     //-----------------------------------
     initialize: function(){
         _.bindAll(this, 'enable_target_view', 'unrender',
-            'select_code');
+            'select_code', 
+            'generate_code', 'generate_form');
 
         //-----------------------------------
         //Set the associated model.  This model is just a model that contains
         //  all the other models: Map, Layers, Controls, etc.
         //-----------------------------------
         //TODO: Allow loading of existing models
-        if(this.model === undefined){
-            this.model = new OLArchitect.models.App();
+        if(this.collection === undefined){
+            //Store a reference to the App collection object.  
+            //  NOTE: This app collection object contains references to
+            //  ALL the models of our app, and is used heavily in the code
+            //  generation function.  We use a collection instead of a single
+            //  model in case we want to extent the app later to support 
+            //  multiple active map configurations
+            OLArchitect.models.objects.app = 
+                new OLArchitect.models.classes.App.Collection();
+            //Set this collection to point to the App collection model object
+            this.collection = OLArchitect.models.objects.app;
+
+            //---------------------------
+            //DEFAULT CONFIGURATION
+            //---------------------------
+            //TODO: Load from a config file?
+            //Setup starting settings, such as adding a google map layer
+            //
+            //Setup the map object
+            //--------------------
+            OLArchitect.models.objects.map = 
+                new OLArchitect.models.classes.Map.Collection()
+
+            //Add a single map object to the map collection.  Note:
+            //  we only use one model object for the map configuration settings
+            OLArchitect.models.objects.map.add(
+                new OLArchitect.models.classes.Map.Map());
+
+            //Setup the controls object 
+            //--------------------
+            OLArchitect.models.objects.controls = 
+                new OLArchitect.models.classes.Controls.Collection()
+
+            //Setup the layers object 
+            //--------------------
+            OLArchitect.models.objects.layers = 
+                new OLArchitect.models.classes.Layers.Collection()
+
+            //Add a google maps layer to it
+            OLArchitect.models.objects.layers.add(
+                new OLArchitect.models.classes.Layers.Google());
+
+            this.collection.add(new OLArchitect.models.classes.App.App({
+                controls: OLArchitect.models.objects.controls,
+                map: OLArchitect.models.objects.map,
+                layers: OLArchitect.models.objects.layers
+            }));
+
         }
+        //We're done loading default values
+
+        //Generate the starting code based on the current app configuration
+        this.generate_code();
     },
 
     //-----------------------------------
@@ -80,14 +120,14 @@ OLArchitect.views.App = Backbone.View.extend({
         $('.configuration_options').css('display', 'none');
 
         //Call undrender() of each view, but make sure the view exists first
-        if(OLArchitect.views.map_view !== undefined){
-            OLArchitect.views.map_view.unrender();
+        if(OLArchitect.views.objects.map.collection !== undefined){
+            OLArchitect.views.objects.map.collection.unrender();
         }
-        if(OLArchitect.views.layers_view !== undefined){
-            OLArchitect.views.layers_view.unrender();
+        if(OLArchitect.views.objects.layers.collection !== undefined){
+            OLArchitect.views.objects.layers.collection.unrender();
         }
-        if(OLArchitect.views.controls_view !== undefined){
-            OLArchitect.views.controls_view.unrender();
+        if(OLArchitect.views.objects.controls.collection !== undefined){
+            OLArchitect.views.objects.controls.collection.unrender();
         }
 
     },
@@ -109,7 +149,7 @@ OLArchitect.views.App = Backbone.View.extend({
         //  and call render() of the target view
 
         //See if a view has already been created
-        if(OLArchitect.views[target_view + '_view'] === undefined){
+        if(OLArchitect.views.objects[target_view].collection === undefined){
             //The corresponding View class is just the capitalized version
             //  of the target_view string.  e.g., the map view class is called
             //  Map, the layers the Layers, the controls is Controls
@@ -117,12 +157,13 @@ OLArchitect.views.App = Backbone.View.extend({
             //  new instance of the target_view's class (e.g., if target_view
             //  is 'map', the corresponding code will compile like
             //      OLArchitect.views.map_view = OlArchitect.views.Map();
-            OLArchitect.views[target_view + '_view'] 
-                = new OLArchitect.views[target_view[0].toUpperCase()
-                    + target_view.substring(1)](); 
+            OLArchitect.views.objects[target_view].collection
+                = new OLArchitect.views.classes[target_view[0].toUpperCase()
+                    + target_view.substring(1)].Collection(); 
         }
+    
         //Render the target view
-        OLArchitect.views[target_view + '_view'].render();
+        OLArchitect.views.objects[target_view].collection.render();
     },
 
     //-----------------------------------
@@ -138,6 +179,31 @@ OLArchitect.views.App = Backbone.View.extend({
         var sel = window.getSelection();
         sel.removeAllRanges();
         sel.addRange(range);
+    },
+
+    //-----------------------------------
+    //Generate Code
+    //-----------------------------------
+    generate_code: function(){
+        //Call the generate_code function. 
+        //NOTE: We could define the function here instead, but the function
+        //  is pretty big and it would make the code a lot harder to read.
+        //  This function is combined when the code is minified with closure,
+        //  so it makes little difference
+        var that = this;
+        OLArchitect.functions.generate_code(that);
+    },
+
+    //-----------------------------------
+    //Generate Form
+    //-----------------------------------
+    generate_form: function(params){
+        //Call the generate_form function. 
+        //NOTE: We could define the function here instead, but the function
+        //  is pretty big and it would make the code a lot harder to read.
+        //  This function is combined when the code is minified with closure,
+        //  so it makes little difference
+        return OLArchitect.functions.generate_form(params);
     }
 });
 

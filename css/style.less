@@ -18,6 +18,8 @@
 @inner_content_background_color: #fdfdfd;
 @inner_content_grey_border: #d7d7d7;
 
+@normal_font: 'Cantarell';
+
 /*Styles*/
 @light_box_shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
 .rounded_corners(@radius: 3px){
@@ -52,7 +54,7 @@ html, body {
     background:#f4f4f4 url(../img/bg_squares.png);
     bottom:0;
     color: @color_black;
-    font-family:'Cantarell', Arial, Verdana, sans-serif; 
+    font-family:@normal_font, Arial, Verdana, sans-serif; 
     left:0;
     margin:0;
     padding:0;
@@ -125,13 +127,13 @@ div {
 input[type='text'], input[type='email'], input[type='number'],
 input[type='submit'], input[type='password'], 
 input[type='search'], input[type='datetime'], 
-input[type='time'], textarea {
+input[type='time'], textarea, select {
     -moz-box-shadow: 0 1px 4px #e0e0e0 inset;
     -webkit-box-shadow: 0 1px 4px #e0e0e0 inset;
     box-shadow: 0 1px 4px #e0e0e0 inset;
     border: 1px solid #a0a0a0;
     color: @color_black;
-    font-family: "Cantarell" Arial, Verdana, sans-serif;
+    font-family: @normal_font, Arial, Verdana, sans-serif;
     font-size:1em;
     padding: 2px;
 }
@@ -392,6 +394,9 @@ input:focus, textarea:focus {
             #configuration_options_base {
                 display: block;
             }
+                #configuration_options_base h3 {
+                    font-family: @normal_font !important;
+                }
 
     /* =====================================================================
      *
@@ -460,6 +465,7 @@ input:focus, textarea:focus {
                 /* Actual code window */
                 #code {
                     bottom:0;
+                    font-size: .9em !important;
                     left:0;
                     overflow: auto;
                     margin:0;

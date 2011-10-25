@@ -3,45 +3,53 @@
  * models_layers.js
  * ----------------------
  *
- *  Contains layer models 
+ *  Contains layer models and collections.  The collection is defined at
+ *  the bottom
  *
  * ======================================================================== */
 //============================================================================
-//Make sure the models object exist
+//
+//Layers
+//
 //============================================================================
-try{
-    OLArchitect.models.Layers = {};
-}catch(err){ OLArchitect.models.Layers = {}; }
+OLArchitect.models.classes.Layers.Google = Backbone.Model.extend({
+
+    //Set defaults.  Properties correspond to OpenLayers' Map class
+    defaults: {
+        type: 'Google',
+        //Blah
+    }
+
+});
+
+OLArchitect.models.classes.Layers.OSM = Backbone.Model.extend({
+    type: 'OSM',
+    //Set defaults.  Properties correspond to OpenLayers' Map class
+    defaults: {
+        //Blah
+    }
+
+});
 
 //============================================================================
 //
 //Collection of layer objects
 //
 //============================================================================
-OLArchitect.models.Layers.Collection = Backbone.Collection.extend({
-    //This collection contains a list of all layer models.  By default,
-    //  we'll assume a single Google Maps layer
-});
-
-//============================================================================
-//
-//Layers
-//
-//============================================================================
-OLArchitect.models.Layers.Google = Backbone.Model.extend({
-    name: 'layers',
-
-    //Set defaults.  Properties correspond to OpenLayers' Map class
-    defaults: {
-        //Blah
+OLArchitect.models.classes.Layers.Collection = Backbone.Collection.extend({
+    //This collection contains a list of all layer model classes
+    model: function(attr, options){
+        //Depending on the type of model the user wants to add, add it
+        switch(attrs.type){
+        case 'Google':
+            //do some stuff
+            return new OLArchitect.models.classes.Layers.Google(
+                attr, options);
+        case 'OSM':
+            return new OLArchitect.models.classes.Layers.OSM(
+                attr, options);
+        default:
+            return false;
+        }
     }
-
-});
-
-OLArchitect.models.Layers.OSM = Backbone.Model.extend({
-    //Set defaults.  Properties correspond to OpenLayers' Map class
-    defaults: {
-        //Blah
-    }
-
 });

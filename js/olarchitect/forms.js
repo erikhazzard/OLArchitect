@@ -8,12 +8,6 @@
  *      inputs to create
  *
  * ======================================================================== */
-//============================================================================
-//Make sure the models object exist
-//============================================================================
-try{
-    OLArchitect.functions.generate_form = undefined; 
-}catch(err){ OLArchitect.functions.generate_form = undefined}
 
 //============================================================================
 //
@@ -189,37 +183,50 @@ OLArchitect.functions.generate_form = function( params ){
                 //SELECT element
                 //---------------------------
                 cur_el_html += '<select id="'
-                    + cur_el_id + ' name="' 
-                    + attr + '" >';
+                    + cur_el_id + '" name="' + attr + '" >';
 
                 //---------------------------
                 //Add options
                 //---------------------------
                 //Add an 'empty' option
-                cur_el_html += "<option>-----</option>";
+                cur_el_html += "<option value='undefined'>-----</option>";
 
                 if(cur_obj.type === 'boolean'){
                     //Only show true or false
                     //Create true option
-                    cur_el_html += "<option value=true ";
+                    cur_el_html += "<option value='true' ";
                     //If set the selected value to true if it's the current 
                     //  value
-                    if(cur_obj.default_value === true ||
-                        model.attributes[attr] === true ){
+                    if(model.attributes[attr] === 'true' ){
                         cur_el_html += " selected ";
                     }
                     cur_el_html += " >true</option>";
 
                     //Create false option
-                    cur_el_html += "<option value=false ";
+                    cur_el_html += "<option value='false' ";
                     //If set the selected value to true if it's the current 
                     //  value
-                    if(cur_obj.default_value === false ||
-                        model.attributes[attr] === false){
+                    if(model.attributes[attr] === 'false'){
                         cur_el_html += " selected ";
                     }
                     cur_el_html += " >false</option>";
+                }else if(cur_obj.type === 'select'){
+                    //Add options based on the options property
+                    for(option in cur_obj.options){
+                        cur_el_html += "<option value='" + 
+                            cur_obj.options[option][0] + "' "
 
+                        //See if the item should be selected
+                        if(model.attributes[attr] 
+                            === cur_obj.options[option][0]){
+                            cur_el_html += " selected ";
+                        }
+
+                        //Finish up the option
+                        cur_el_html += ">" 
+                            + cur_obj.options[option][1] 
+                            + "</option>";
+                    } 
                 }
 
                 //---------------------------

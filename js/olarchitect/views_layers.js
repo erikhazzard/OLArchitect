@@ -5,7 +5,7 @@
 //
 //
 //============================================================================
-OLArchitect.views.Layers = Backbone.View.extend({
+OLArchitect.views.classes.Layers.Collection = Backbone.View.extend({
     //The Map, Layers, and Controls views will all be rendered
     //  to the same element (and destroyed on unrender)
     el: '#configuration_options_layers',
@@ -46,11 +46,7 @@ OLArchitect.views.Layers = Backbone.View.extend({
 
         //Specify the collection (the layers of this map)
         if(this.collection === undefined){
-            this.collection = new OLArchitect.models.Layers.Collection();
-
-            //By default, create a new Google layer and add it to the layer list
-            var google_layer = new OLArchitect.models.Layers.Google();
-            this.collection.add(google_layer);
+            this.collection = OLArchitect.models.objects.layers;
         }
 
         //Add some events to the collection
@@ -72,7 +68,7 @@ OLArchitect.views.Layers = Backbone.View.extend({
         //  layer or control
         var ret_html = "<li class='config_item_container button big flag'>"
             +   "<span class='config_item_title'>"
-            +       item 
+            +       item.get('type') 
             +    "</span>"
             +    "<div class='config_item_remove'></div>"
             + "</li>";
@@ -91,11 +87,12 @@ OLArchitect.views.Layers = Backbone.View.extend({
 
         $(this.el).append("<div id='form_wrapper_layers'></div>");
 
-        //Create the base and overlay labels
-        $(this.el).append("<div id='base_layers'>"
+        //Create the base and overlay labels and append them to the
+        //  newly created element (above)
+        $('#form_wrapper_layers').append("<div id='base_layers'>"
             +   "<li class='header_item'>Base Layers</li>"
             + "</div>");
-        $(this.el).append("<div id='overlay_layers'>"
+        $('#form_wrapper_layers').append("<div id='overlay_layers'>"
             +   "<li class='header_item'>Overlay Layers</li>"
             + "</div>");
         //For each layer in the collection, create some html elements
@@ -112,7 +109,7 @@ OLArchitect.views.Layers = Backbone.View.extend({
         //  Note: This render() function gets called every time the
         //  model changes, so generate_code() also gets called every
         //  time this model changes
-        OLArchitect.functions.generate_code();
+        OLArchitect.views.objects.app.generate_code();
         return this;
     },
 

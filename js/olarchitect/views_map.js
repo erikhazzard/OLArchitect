@@ -5,7 +5,7 @@
 //
 //
 //============================================================================
-OLArchitect.views.Map = Backbone.View.extend({
+OLArchitect.views.classes.Map.Collection = Backbone.View.extend({
     //The Map, Layers, and Controls views will all be rendered
     //  to the same element (and destroyed on unrender)
     el: '#configuration_options_map',
@@ -39,12 +39,18 @@ OLArchitect.views.Map = Backbone.View.extend({
         //-----------------------------------
         //Specify the model for this view
         //-----------------------------------
-        if(this.model === undefined){
-            this.model = new OLArchitect.models.Map();
-        }
+        //Note: The OLArchitect.views.objects.map will always
+        //  have something in it.  It is instaniated when the App is
+        //  instaniated, so it may be either a new, empty object or
+        //  an object containing existing settings
+        this.collection = OLArchitect.models.objects.map;
 
-        //Whenever this model changes, call this.render
-        this.model.bind('change', this.render);
+        //Whenever any models in this collection change, call this.render
+        //  NOTE: We'll really only have ONE model object in the collection,
+        //  but do this to maintain extensibility
+        _(this.collection.models).each(function(item){
+            item.bind('change', this.render);
+        }, this);
     },
 
     //-----------------------------------
@@ -58,9 +64,11 @@ OLArchitect.views.Map = Backbone.View.extend({
    
         //Fill this view's element with form elements generated from
         //  this model
+        //Note: We'll only ever use the first object in this collection,
+        //  which is the user's current configuration options
         $(this.el).html(
-            OLArchitect.functions.generate_form({
-                model: this.model
+            OLArchitect.views.objects.app.generate_form({
+                model: this.collection.models[0]
             })
         );
 
@@ -69,7 +77,7 @@ OLArchitect.views.Map = Backbone.View.extend({
         //  Note: This render() function gets called every time the
         //  model changes, so generate_code() also gets called every
         //  time this model changes
-        OLArchitect.functions.generate_code();
+        OLArchitect.views.objects.app.generate_code();
         
         return this;
     },
@@ -96,7 +104,10 @@ OLArchitect.views.Map = Backbone.View.extend({
         temp_obj[e.currentTarget['name']] = e.currentTarget.value;
         
         //Now, update the model and set the key:value we just defined above
-        this.model.set(temp_obj);
+        //
+        //We'll only ever update the first model in the collection (which is
+        //  the current map configuration used by the user)
+        this.collection.models[0].set(temp_obj);
     },
 
     //-----------------------------------
