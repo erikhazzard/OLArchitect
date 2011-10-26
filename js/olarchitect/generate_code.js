@@ -122,8 +122,9 @@ OLArchitect.functions.generate_code = function(app_object){
     //Finish off the options
     final_output.push('\t});');
 
-    final_output.push("\t//We just created a local map object, so now we will create a reference to it in our");
-    final_output.push("\t//\tgloabl MAP_APP object so we can access it outside of this function");
+    final_output.push("\t//We just created a local map object, so now we will create a reference");
+    final_output.push("\t//\t to it in our gloabl MAP_APP object so we can access it outside of");
+    final_output.push("\t//\t this function");
     final_output.push('\tMAP_APP.map = map_object;');
     final_output.push('');
     
