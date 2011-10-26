@@ -60,45 +60,45 @@ OLArchitect.models.classes.Map.Map = Backbone.Model.extend({
     schema: {
         // LABEL ONLY example
         header_general: {
-            type: 'header',
-            default_value: 'General Settings'
+            default_value: 'General Settings',
+            form_type: 'header'
         },
 
         div: {
             help_text: "This is the ID of the element that your map will go into. By default, this value is 'map' - which assumes you will have a div element on your page that contains an ID of 'map'. No spaces are allowed in HTML IDs.",
-            type: 'string'
+            form_type: 'string'
         },
         projection: {
             default_value: 'EPSG:4326',
-            get_html: function(val){ return "new OpenLayers.Projection('" + val + "')"; },
-            type: 'string'
+            form_type: 'string',
+            get_html: function(val){ return "new OpenLayers.Projection('" + val + "')"; }
         },
         displayProjection: {
             default_value: 'EPSG:4326',
             get_html: function(val){ return "new OpenLayers.Projection('" + val + "')"; },
             help_text: "This is a property that is used mainly by controls which show coordinate information. By setting this property on the map object, any control that has a displayProjection property will be set to this value. Controls, such as the MousePosition control, can display coordinates in the displayProjection. So, your map could be in a different projection than what you wish to display the coordinates in. However, to use a displayProjection other than EPSG:4326 or EPSG:900913, Proj4js must be included on your page. This property comes in very handy if, for instance, your map is in a spherical Mercator projection (i.e., EPSG:900913, or the Google Maps projection), but you might wish to display coordinates in another projection, like EPSG:4326 (to display lon/lat coordinates).",
-            type: 'string'
+            form_type: 'string'
         },
         maxExtent: {
             default_value: '-180, -90, 180, 90',
             get_html: function(val){ return "new OpenLayers.Bounds(" + val + ")"; },
-            type: 'string'
+            form_type: 'string'
         },
 
 
         // Advanced stuff
         header_advanced: {
-            type: 'header',
+            form_type: 'header',
             default_value: 'Advanced Settings'
         },
         allOverlays: {
             default_value: false,
             help_text: "The allOverlays property specifies whether or not the map can function without any baselayers. By setting this property, all layers will act as overlay layers. There may be times when you wish to use this - just keep in mind, when using this property, users have the ability to disable all layers and they could, in effect, see an empty map. By setting this property to true, third party API layers will also act as overlay layers. So, if you wish, you could use a Google maps layer as an overlay layer and make it semi transparent.",
-            type: 'boolean'
+            form_type: 'boolean'
         },
         fallThrough: {
             default_value: true,
-            type: 'boolean'
+            form_type: 'boolean'
         },
         unit: {
             default_value: 'degrees',
@@ -109,7 +109,7 @@ OLArchitect.models.classes.Map.Map = Backbone.Model.extend({
                         ['m', 'meters'],
                         ['mi', 'miles']
             ],
-            type: 'select'
+            form_type: 'select'
         },
     },
 
@@ -121,6 +121,8 @@ OLArchitect.models.classes.Map.Map = Backbone.Model.extend({
     //Generate HTML
     //  NOTE: The schema object literal must be defined, as that what we'll use
     //  to generate HTML
+    //TODO: Put this in the app view and accept a model
+    //  as a parameter (or use model inheritence)
     generate_html: function(num_tabs){
         //num_tabs is the number of tabs to prepend to the outputted HTML
         if(num_tabs === undefined){

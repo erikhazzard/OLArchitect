@@ -39,6 +39,14 @@ OLArchitect.functions.generate_code = function(app_object){
     var layer_models = app_object.collection.models[0].get('layers').models;
     var control_models = app_object.collection.models[0].get('controls').models;
 
+    var scripts_loaded = {};
+    var cur_type = undefined;
+    var item = undefined;
+
+    //Layer vars
+    var cur_layer_var_name = '';
+    var layer_var_names = [];
+
     //-----------------------------------
     //
     //Check for Third Party API requirements
@@ -47,10 +55,22 @@ OLArchitect.functions.generate_code = function(app_object){
     //We need to first check if user has requested a google, osm, bing, etc.
     //  map so we can add the third party API script here
     //Check for GOOGLE MAPS
-    for(var item in layer_models){
-        console.log(layer_models[item].get('type'));
+    //  Store variables to determine if we've added the third party script 
+    //  for each third party...this could be done more cleverly, but
+    //  this keeps it simple enough for now...optimize later
+    scripts_loaded['Google'] = false; 
+    scripts_loaded['OSM'] = false; 
+    scripts_loaded['Bing'] = false; 
+    //Loop through each model in the layer_models object (the collection of
+    //  layer objects).  This loop will determine if we need to add the 
+    //  third party API script tag
+    for(item in layer_models){
+        cur_type = layer_models[item].get('layer_type');
+        if(cur_type === 'Google' && scripts_loaded[cur_type] !== true){
+            final_output.push("<script src='http://maps.google.com/maps/api/js?sensor=false'></script>");
+            scripts_loaded[cur_type] = true;
+        }
     }
-    final_output.push("<script src='third_party_api.js'></script>");
 
     //-----------------------------------
     //
@@ -105,6 +125,7 @@ OLArchitect.functions.generate_code = function(app_object){
     final_output.push("\t//We just created a local map object, so now we will create a reference to it in our");
     final_output.push("\t//\tgloabl MAP_APP object so we can access it outside of this function");
     final_output.push('\tMAP_APP.map = map_object;');
+    final_output.push('');
     
 
     //-----------------------------------
@@ -112,6 +133,58 @@ OLArchitect.functions.generate_code = function(app_object){
     //Add LAYERS
     //
     //-----------------------------------
+    final_output.push('\t//---------------------------------------');
+    final_output.push('\t//Set up layers');
+    final_output.push('\t//---------------------------------------');
+
+    //Create an array which will consist of every layer variable name
+    //  which we'll use to add layers to the map after looping through
+    //  all the layers
+    //Note: this is already defined above, but define it here
+    //  for clarity
+    layer_var_names = [];
+
+    //Create layer objects HTML
+    for(item in layer_models){
+        //Push a comment
+        final_output.push('\t//Create a ' + layer_models[item].get('layer_type')
+            + ' layer ');
+        var cur_layer_var_name = 'layer_'
+            + layer_models[item].get('layer_type').toLowerCase()
+            + '_' + layer_models[item].cid
+        //And then the layer creation string
+        final_output.push('\tvar '
+            + cur_layer_var_name 
+            +' = new OpenLayers.Layer.'
+            + layer_models[item].get('layer_type')
+            + '({'
+        );
+
+        //Add the layer variable name to the layer_var_names array
+        layer_var_names.push(cur_layer_var_name);
+        
+        //Add the HTML for the layer configuration to the final code output
+        final_output.push(
+            layer_models[item].generate_html(2)
+        );
+
+        final_output.push('\t});');
+    }
+
+    //Add layers to the map. 
+    //  Note: we could do this in the above loop, but it's a little clearer
+    //  to call map.addLayers and pass in all the layers at once.  
+    final_output.push('');
+    final_output.push('');
+    final_output.push('\t//---------------------------------------');
+    final_output.push('\t//Add layers to map');
+    final_output.push('\t//---------------------------------------');
+    final_output.push('\tmap_object.addLayers([');
+    final_output.push('\t\t' + layer_var_names.join(','));
+    final_output.push('\t])');
+
+
+
 
     //-----------------------------------
     //

@@ -146,7 +146,6 @@ OLArchitect = {
         generate_code: undefined
     }
 };
-
 //============================================================================
 //
 //UTILITY Functions

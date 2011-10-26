@@ -17,8 +17,41 @@ OLArchitect.models.classes.Layers.Google = Backbone.Model.extend({
     //Set defaults.  Properties correspond to OpenLayers' Map class
     defaults: {
         name: 'Google Layer',
-        type: 'Google',
+        type: undefined,
+        layer_type: 'Google',
         //Blah
+    },
+    schema: {
+        type: {
+            form_type: 'select',
+            get_html: function(val){
+                return "google.maps.MapTypeId." + val
+            },
+            options: [ 
+                ['HYBRID', 'Hybrid (Streets + Satellite'],
+                ['SATELLITE', 'Satellite'],
+                ['undefined','Street View'],
+                ['TERRAIN', 'Terrain / Physical']
+            ]
+        }
+    },
+
+    generate_html: function(num_tabs){
+        //TODO: This should be in the app view
+        var that = this;
+        var output_html = [];
+        for(attr in this.schema){
+            if(that.get(attr) !== undefined){
+                output_html.push(
+                    '\t'.multiply(num_tabs)
+                    + attr + ': '
+                    + that.schema[attr].get_html(
+                        that.get(attr)      
+                    )
+                );
+            }
+        }
+        return output_html.join(',\n')
     }
 
 });
@@ -28,8 +61,9 @@ OLArchitect.models.classes.Layers.OSM = Backbone.Model.extend({
     defaults: {
         //Blah
         name: 'Open Street Map',
-        type: 'OSM',
-    }
+        layer_type: 'OSM',
+    },
+    generate_html: OLArchitect.functions.generate_html
 
 });
 
@@ -42,7 +76,7 @@ OLArchitect.models.classes.Layers.Collection = Backbone.Collection.extend({
     //This collection contains a list of all layer model classes
     model: function(attr, options){
         //Depending on the type of model the user wants to add, add it
-        switch(attrs.type){
+        switch(attrs.layer_type){
         case 'Google':
             //do some stuff
             return new OLArchitect.models.classes.Layers.Google(

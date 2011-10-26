@@ -4,7 +4,7 @@
  * ----------------------
  *
  *  Generates HTML form inputs based on a passed in model, using the
- *      passed in model's schema property, which determines the types of
+ *      passed in model's schema property, which determines the form_types of
  *      inputs to create
  *
  * ======================================================================== */
@@ -85,7 +85,7 @@ OLArchitect.functions.generate_form = function( params ){
             
             //Schema can also contain "headers", which are like labels
             //  but have no input - just a header
-            if(cur_obj.type !== 'header'){
+            if(cur_obj.form_type !== 'header'){
                 //Close the LI element tag
                 cur_el_html += " >";
 
@@ -110,9 +110,9 @@ OLArchitect.functions.generate_form = function( params ){
             //---------------------------
             //Check for types
             //---------------------------
-            if(cur_obj.type === 'string' 
-                || cur_obj.type === 'float' 
-                || cur_obj.type === 'int'){
+            if(cur_obj.form_type === 'string' 
+                || cur_obj.form_type === 'float' 
+                || cur_obj.form_type === 'int'){
                 //---------------------------
                 //INPUT element
                 //---------------------------
@@ -124,8 +124,8 @@ OLArchitect.functions.generate_form = function( params ){
                 //---------------------------
                 //check for input type
                 //---------------------------
-                if(cur_obj.type === 'int'
-                    ||cur_obj.type === 'float'){
+                if(cur_obj.form_type === 'int'
+                    ||cur_obj.form_type === 'float'){
                     //Use a number type
                     cur_el_html += "'number' ";
 
@@ -177,8 +177,8 @@ OLArchitect.functions.generate_form = function( params ){
                     + cur_el_id + "' />";
 
 
-            }else if(cur_obj.type === 'select'
-                || cur_obj.type === 'boolean'){
+            }else if(cur_obj.form_type === 'select'
+                || cur_obj.form_type === 'boolean'){
                 //---------------------------
                 //SELECT element
                 //---------------------------
@@ -191,7 +191,7 @@ OLArchitect.functions.generate_form = function( params ){
                 //Add an 'empty' option
                 cur_el_html += "<option value='undefined'>-----</option>";
 
-                if(cur_obj.type === 'boolean'){
+                if(cur_obj.form_type === 'boolean'){
                     //Only show true or false
                     //Create true option
                     cur_el_html += "<option value='true' ";
@@ -210,7 +210,7 @@ OLArchitect.functions.generate_form = function( params ){
                         cur_el_html += " selected ";
                     }
                     cur_el_html += " >false</option>";
-                }else if(cur_obj.type === 'select'){
+                }else if(cur_obj.form_type === 'select'){
                     //Add options based on the options property
                     for(option in cur_obj.options){
                         cur_el_html += "<option value='" + 
