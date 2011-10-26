@@ -1,15 +1,15 @@
 //============================================================================
 //
 //
-//Layers
+//Collection View
 //
+//This is a view for a collection of items (layers, controllers, etc.)
 //
 //============================================================================
-OLArchitect.views.classes.Layers.Collection = Backbone.View.extend({
-    //The Map, Layers, and Controls views will all be rendered
-    //  to the same element (and destroyed on unrender)
-    el: '#configuration_options_layers',
-
+OLArchitect.views.classes.Collection = Backbone.View.extend({
+    //NOTE: el must be passed in 
+    //NOTE: item_type must be passed in (Layer, Map, or Control)
+    //
     //-----------------------------------
     //Events:
     //-----------------------------------
@@ -60,7 +60,8 @@ OLArchitect.views.classes.Layers.Collection = Backbone.View.extend({
 
         //Specify the collection (the layers of this map)
         if(this.collection === undefined){
-            this.collection = OLArchitect.models.objects.layers;
+            console.log('ERROR: No collection passed in');
+            return false
         }
 
         //Add some events to the collection
@@ -100,59 +101,54 @@ OLArchitect.views.classes.Layers.Collection = Backbone.View.extend({
     //Render function
     //-----------------------------------
     render: function(){
-        //variable we'll use later
-        var target_el = undefined; 
-    
-        //Clear the HTML first
-        $(this.el).html('');
-
-        //Show this element
-        $(this.el).css('display', 'block');
-
-        $(this.el).append("<div id='form_wrapper_layers'></div>");
-
-        //Create the base and overlay labels and append them to the
-        //  newly created element (above)
-        $('#form_wrapper_layers').append("<div id='base_layers'>"
-            +   "<li class='header_item'><h3>Base Layers</h3></li>"
-            + "</div>");
-        $('#form_wrapper_layers').append("<div id='overlay_layers'>"
-            +   "<li class='header_item'><h3>Overlay Layers</h3></li>"
-            + "</div>");
-        //For each layer in the collection, create some html elements
-        _(this.collection.models).each(function(item){
-            //If it's a base layer, add it to the base div
-            target_el = '#form_wrapper_layers #base_layers';
-            $(target_el).append(
-                this.generate_item_container_html(item)
-            );
-        }, this);
-
-        //Create the 'Add new control' button
-        target_el = '#form_wrapper_layers #base_layers';
-        $(target_el).append(
-            "<div class='config_item_container button new_config_item'>"
-            +   "<span class='config_item_title'>"
-            +       "New Layer"
-            +   "</span>"
-            + "</div>"
-        );
-        
-        //Call the generate_code function, which will generate
-        //  code based on the user's current configuration.
-        //  Note: This render() function gets called every time the
-        //  model changes, so generate_code() also gets called every
-        //  time this model changes
-        //
+        //Don't actually render anything until the App view is
+        //  instaniated.  
         //Note: This view won't actually be instantiated until the app
         //  is initialized, which means any models that get added by default
         //      (either by default or through loading existing configurations)
         //  will try to call the generate_code function before it actually 
-        //  exists.  So, in main.js there is a dummy function that this will
-        //  call, but it will be replaced during app instanitation (and when
-        //  the app is instaniated, the code is generated again)
-        OLArchitect.views.objects.app.generate_code();
+        //  exists.
+        if(OLArchitect.views.objects.app !== undefined){
+            //variable we'll use later
+            var target_el = undefined; 
+        
+            //Clear the HTML first
+            $(this.el).html('');
 
+            //Show this element
+            $(this.el).css('display', 'block');
+
+            $(this.el).append("<div id='form_wrapper_layers'></div>");
+
+            //Create the base and overlay labels and append them to the
+            //  newly created element (above)
+            $('#form_wrapper_layers').append("<div id='base_layers'>"
+                +   "<li class='header_item'><h3>Base Layers</h3></li>"
+                + "</div>");
+            $('#form_wrapper_layers').append("<div id='overlay_layers'>"
+                +   "<li class='header_item'><h3>Overlay Layers</h3></li>"
+                + "</div>");
+            //For each layer in the collection, create some html elements
+            _(this.collection.models).each(function(item){
+                //If it's a base layer, add it to the base div
+                target_el = '#form_wrapper_layers #base_layers';
+                $(target_el).append(
+                    this.generate_item_container_html(item)
+                );
+            }, this);
+
+            //Create the 'Add new control' button
+            target_el = '#form_wrapper_layers #base_layers';
+            $(target_el).append(
+                "<div class='config_item_container button new_config_item'>"
+                +   "<span class='config_item_title'>"
+                +       "New Layer"
+                +   "</span>"
+                + "</div>"
+            );
+            
+            OLArchitect.views.objects.app.generate_code();
+        }
         return this;
     },
 
@@ -266,21 +262,3 @@ OLArchitect.views.classes.Layers.Collection = Backbone.View.extend({
         this.collection.add(new_item);
     }
 })
-
-//============================================================================
-//
-//
-//Individual Layer View (e.g.,settings for a single google layer)
-//
-//
-//============================================================================
-OLArchitect.views.classes.Layers.Layer = Backbone.View.extend({
-    //NOTE: el is set in initialization function
-    event: {
-
-    },
-
-    initialization: function(){
-        //Set el if it isn't passed in
-    }
-});

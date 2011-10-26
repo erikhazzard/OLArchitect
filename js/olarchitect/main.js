@@ -95,39 +95,13 @@ OLArchitect = {
             //  have a view for a single model object, so App will point 
             //  to a view, NOT an object literal like the rest of the objects.
             App: undefined,
-
-            //Each control and layers sub model will have an associated view,
-            //  along with a view for the actual collection of controls 
-            //  / layers
-            Controls: {
-                Collection: undefined,
-                Control: undefined
-                //etc...
-            },
-            Layers: {
-                Collection: undefined,
-                Layer: undefined
-                //etc...
-            },
-            Map: {
-                //There is only one map view, but consider it a Collection
-                //  for consistency
-                Collection: undefined         
-            }
+            Collection: undefined,
+            Model: undefined
         },
         objects: {
             //Objects contain instaniated app classes. See above (models)
             //  for more info
-            app: { 
-                //Only a single view for the app
-                //NOTE: This WILL be override when the app is instaniated.
-                //  However, before the app view is created models may try to
-                //  call this function, so let's define a blank one so we don't
-                //  get an error when they do (Any models added by default will
-                //  try to call this, but after the app is instantiated this
-                //  function will be replaced by a real function)
-                generate_code: function(){} 
-            },
+            app: undefined,
             controls: {
                 collection: undefined,
                 overview_map: undefined

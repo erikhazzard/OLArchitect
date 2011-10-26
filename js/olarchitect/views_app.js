@@ -71,7 +71,9 @@ OLArchitect.views.classes.App = Backbone.View.extend({
 
             //Setup the view object
             OLArchitect.views.objects.map.collection 
-                = new OLArchitect.views.classes.Map.Collection(); 
+                = new OLArchitect.views.classes.Model(
+                    {el: '#configuration_options_map'}
+                ); 
 
             //Add a single map object to the map collection.  Note:
             //  we only use one model object for the map configuration settings
@@ -84,7 +86,10 @@ OLArchitect.views.classes.App = Backbone.View.extend({
                 new OLArchitect.models.classes.Controls.Collection()
             //Setup the view object
             OLArchitect.views.objects.controls.collection 
-                = new OLArchitect.views.classes.Controls.Collection(); 
+                = new OLArchitect.views.classes.Collection({
+                    el: '#configuration_options_layers',
+                    collection: OLArchitect.models.objects.controls
+                }); 
 
             //Setup the LAYERS
             //--------------------
@@ -93,7 +98,10 @@ OLArchitect.views.classes.App = Backbone.View.extend({
                 new OLArchitect.models.classes.Layers.Collection()
             //Setup the view object
             OLArchitect.views.objects.layers.collection 
-                = new OLArchitect.views.classes.Layers.Collection(); 
+                = new OLArchitect.views.classes.Collection({
+                    el: '#configuration_options_layers',
+                    collection: OLArchitect.models.objects.layers
+                }); 
 
             //Set up THIS Application's collection object.  It contains
             //  models which we'll use throughout the application
