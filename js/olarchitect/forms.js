@@ -59,7 +59,6 @@ OLArchitect.functions.generate_form = function( params ){
     var cur_el_id = undefined,
         cur_obj = undefined,
         cur_el_html = undefined;
-
     
     //-----------------------------------
     //

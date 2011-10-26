@@ -27,8 +27,8 @@ OLArchitect.views.classes.Collection = Backbone.View.extend({
         'mouseleave .config_item_container': 'mouseup_config_item',
 
         //Config item functions
-        'click .config_item_remove': 'remove_config_item',
-        'click .new_config_item': 'add_config_item',
+        'click .config_item_remove': 'ui_remove_model',
+        'click .new_config_item': 'create_new_model',
 
         'change input': 'update_data',
         'change select': 'update_data',
@@ -51,22 +51,33 @@ OLArchitect.views.classes.Collection = Backbone.View.extend({
             'update_data',
             'change_layer_order',
             'generate_item_container_html',
-            'add_layer', 'remove_layer',
+            'add_model', 'remove_model',
             'hover_li', 'unhover_li', 
             'hover_config_item', 'unhover_config_item', 
             'mousedown_config_item', 'mouseup_config_item', 
-            'add_config_item', 'remove_config_item'
+            'create_new_model', 'ui_remove_model',
+            'generate_html'
             );
 
         //Specify the collection (the layers of this map)
+        //  collection must be passed in
         if(this.collection === undefined){
-            console.log('ERROR: No collection passed in');
+            console.log('ERROR: No collection passed into collection view');
             return false
         }
 
+        //Get the collection type (will be either 'Layer' or 'Control')
+        if(this.el.id.search(/layer/gi) !== -1){
+            this.collection_type = 'layer';
+        }else if(this.el.id.search(/control/gi) !== -1){
+            this.collection_type = 'control';
+        }else {
+            this.collection_type = undefined;
+        }
+
         //Add some events to the collection
-        this.collection.bind('add', this.add_layer);
-        this.collection.bind('remove', this.remove_layer);
+        this.collection.bind('add', this.add_model);
+        this.collection.bind('remove', this.remove_model);
 
         //Whenever this model changes, call this.render
         //this.model.bind('change', this.render);
@@ -118,31 +129,45 @@ OLArchitect.views.classes.Collection = Backbone.View.extend({
             //Show this element
             $(this.el).css('display', 'block');
 
-            $(this.el).append("<div id='form_wrapper_layers'></div>");
+            $(this.el).append("<div id='form_wrapper_"
+                + this.collection_type + "'></div>");
 
-            //Create the base and overlay labels and append them to the
-            //  newly created element (above)
-            $('#form_wrapper_layers').append("<div id='base_layers'>"
-                +   "<li class='header_item'><h3>Base Layers</h3></li>"
-                + "</div>");
-            $('#form_wrapper_layers').append("<div id='overlay_layers'>"
-                +   "<li class='header_item'><h3>Overlay Layers</h3></li>"
-                + "</div>");
+            //If this view is for a Layer, collection, we want to render
+            //  Base and Overlay headers
+            if(this.collection_type === 'layer'){
+                //Create the base and overlay labels and append them to the
+                //  newly created element (above)
+                $('#form_wrapper_'
+                    + this.collection_type).append("<div id='base_layers'>"
+                    +   "<li class='header_item'><h3>Base Layers</h3></li>"
+                    + "</div>");
+                $('#form_wrapper_'
+                    + this.collection_type).append("<div id='overlay_layers'>"
+                    +   "<li class='header_item'><h3>Overlay Layers</h3></li>"
+                    + "</div>");
+            }
+            //Get target element to append stuff into
+            target_el = '#form_wrapper_'
+                + this.collection_type;
+            if(this.collection_type === 'layer'){
+                target_el += ' #base_layers';
+            }
+
             //For each layer in the collection, create some html elements
             _(this.collection.models).each(function(item){
                 //If it's a base layer, add it to the base div
-                target_el = '#form_wrapper_layers #base_layers';
                 $(target_el).append(
                     this.generate_item_container_html(item)
                 );
             }, this);
 
             //Create the 'Add new control' button
-            target_el = '#form_wrapper_layers #base_layers';
             $(target_el).append(
                 "<div class='config_item_container button new_config_item'>"
                 +   "<span class='config_item_title'>"
-                +       "New Layer"
+                +       "New " 
+                +           this.collection_type[0].toUpperCase()
+                +           this.collection_type.substring(1)
                 +   "</span>"
                 + "</div>"
             );
@@ -182,7 +207,7 @@ OLArchitect.views.classes.Collection = Backbone.View.extend({
     //Layer Collection functions
     //
     //-----------------------------------
-    add_layer: function(item){
+    add_model: function(item){
         //This function is called whenever a layer object is added to
         //  the Layers collection (this.collection).
         //
@@ -190,7 +215,7 @@ OLArchitect.views.classes.Collection = Backbone.View.extend({
         //TODO: Create view
         this.render();
     },
-    remove_layer: function(item){
+    remove_model: function(item){
         //Destroy the model
         item.destroy();
 
@@ -230,7 +255,7 @@ OLArchitect.views.classes.Collection = Backbone.View.extend({
     //-----------------------------------
     //Remove Config Item
     //-----------------------------------
-    remove_config_item: function(e){
+    ui_remove_model: function(e){
         //Get the target model based on the item the user clicked
         var cur_model = this.collection._byCid[
             e.currentTarget.id.replace('config_item_for_', '')];
@@ -250,9 +275,9 @@ OLArchitect.views.classes.Collection = Backbone.View.extend({
     },
 
     //-----------------------------------
-    //Add config item
+    //Create config item
     //-----------------------------------
-    add_config_item: function(e){
+    create_new_model: function(e){
         //This will add a new layer / control item
         //Get the target model based on the item the user clicked
         
@@ -260,5 +285,17 @@ OLArchitect.views.classes.Collection = Backbone.View.extend({
         //For now, just use a google layer
         var new_item = new OLArchitect.models.classes.Layers.Google({});
         this.collection.add(new_item);
+    },
+
+    //-----------------------------------
+    //Generate HTML for collection
+    //-----------------------------------
+    generate_html: function(num_tabs){
+        //This function 
+        if(num_tabs === undefined){
+            var num_tabs = 2;
+        }
+
+
     }
 })

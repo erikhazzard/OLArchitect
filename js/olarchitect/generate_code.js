@@ -65,7 +65,7 @@ OLArchitect.functions.generate_code = function(app_object){
     //  layer objects).  This loop will determine if we need to add the 
     //  third party API script tag
     for(item in layer_models){
-        cur_type = layer_models[item].get('layer_type');
+        cur_type = layer_models[item].get('model_type');
         if(cur_type === 'Google' && scripts_loaded[cur_type] !== true){
             final_output.push("<script src='http://maps.google.com/maps/api/js?sensor=false'></script>");
             scripts_loaded[cur_type] = true;
@@ -104,14 +104,10 @@ OLArchitect.functions.generate_code = function(app_object){
     final_output.push('\tvar map_object = new OpenLayers.Map({');
     final_output.push('\t\t//Define map options');
     //Get MAP config string
-    //This may look a little intimidating, but it's not too complex:
-    //  -Call the generate_html function of the passed in app object (
-    //      OLArchitect.models.objects.app)
-    //      -Pass in the map model, an options_only flag of true so we only
-    //          get the options html, and 2 tabs prepended to each line
-    final_output.push(app_object.generate_model_html({
-        model: app_object.collection.models[0].get('map').models[0],
-        options_only: true,
+    //  -Call the generate_html function of the map view and prepend
+    //      two tabs to each line output
+    console.log(map_models);
+    final_output.push(OLArchitect.views.objects.map.generate_html({
         num_tabs: 2
     }));
     
@@ -144,16 +140,16 @@ OLArchitect.functions.generate_code = function(app_object){
     //Create layer objects HTML
     for(item in layer_models){
         //Push a comment
-        final_output.push('\t//Create a ' + layer_models[item].get('layer_type')
+        final_output.push('\t//Create a ' + layer_models[item].get('model_type')
             + ' layer ');
         var cur_layer_var_name = 'layer_'
-            + layer_models[item].get('layer_type').toLowerCase()
+            + layer_models[item].get('model_type').toLowerCase()
             + '_' + layer_models[item].cid
         //And then the layer creation string
         final_output.push('\tvar '
             + cur_layer_var_name 
             +' = new OpenLayers.Layer.'
-            + layer_models[item].get('layer_type')
+            + layer_models[item].get('model_type')
             + '({'
         );
 
@@ -161,10 +157,9 @@ OLArchitect.functions.generate_code = function(app_object){
         layer_var_names.push(cur_layer_var_name);
         
         //Add the HTML for the layer configuration to the final code output
+        //TODO: THIS
         final_output.push(
-            app_object.generate_model_html({
-                model: layer_models[item],
-                options_only: true,
+            OLArchitect.views.objects.___.generate_model_html({
                 num_tabs: 2
             })
         );
@@ -177,9 +172,8 @@ OLArchitect.functions.generate_code = function(app_object){
     //  to call map.addLayers and pass in all the layers at once.  
     if(layer_var_names.length > 0){
         final_output.push('');
-        final_output.push('');
         final_output.push('\t//---------------------------------------');
-        final_output.push('\t//Add layers to map');
+        final_output.push('\t//Add the previously created layers to map');
         final_output.push('\t//---------------------------------------');
         //Make sure they have at least one layer
             final_output.push('\tmap_object.addLayers([');
@@ -189,7 +183,50 @@ OLArchitect.functions.generate_code = function(app_object){
         final_output.push('\t//WARNING: You do not have any layers!');
     }
 
+    //-----------------------------------
+    //
+    //Add Controls
+    //
+    //-----------------------------------
+    final_output.push('');
+    if(control_models.length > 0){
+        final_output.push('\t//---------------------------------------');
+        final_output.push('\t//Set up controls');
+        final_output.push('\t//---------------------------------------');
 
+        control_var_names = [];
+
+        //Create control objects HTML
+        for(item in control_models){
+            //Push a comment
+            final_output.push('\t//Create a ' + control_models[item].get('model_type')
+                + ' control ');
+            var cur_control_var_name = 'control_'
+                + control_models[item].get('model_type').toLowerCase()
+                + '_' + control_models[item].cid
+            //And then the control creation string
+            final_output.push('\tvar '
+                + cur_control_var_name 
+                +' = new OpenLayers.Layer.'
+                + control_models[item].get('model_type')
+                + '({'
+            );
+
+            //Add the control variable name to the control_var_names array
+            control_var_names.push(cur_control_var_name);
+            
+            //Add the HTML for the control configuration to the final code output
+            final_output.push(
+                app_object.generate_model_html({
+                    model: control_models[item],
+                    options_only: true,
+                    num_tabs: 2
+                })
+            );
+
+            final_output.push('\t});');
+        }
+    }
 
 
     //-----------------------------------

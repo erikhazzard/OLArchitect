@@ -34,7 +34,8 @@ OLArchitect.views.classes.Model= Backbone.View.extend({
         //Bind this context, pass in all of this view's functions
         _.bindAll(this, 'render', 'unrender', 
             'hover_li', 'unhover_li', 
-            'update_data');
+            'update_data',
+            'generate_form', 'generate_html');
 
         //Set this element's ID if it wasn't passed in
         //  If it wasn't passed in, assume we're looking at the map 
@@ -52,7 +53,7 @@ OLArchitect.views.classes.Model= Backbone.View.extend({
         }
 
         //Whenever a model is changed, called render
-        model.bind('change', this.render);
+        this.model.bind('change', this.render);
 
         return this;
     },
@@ -72,11 +73,10 @@ OLArchitect.views.classes.Model= Backbone.View.extend({
         //Fill this view's element with form elements generated from
         //  this model
         $(this.el).html(
-            OLArchitect.views.objects.app.generate_form({
+            this.generate_form({
                 model: this.model
             })
         );
-
         //Call the generate_code function, which will generate
         //  code based on the user's current configuration.
         //  Note: This render() function gets called every time the
@@ -125,5 +125,133 @@ OLArchitect.views.classes.Model= Backbone.View.extend({
     },
     unhover_li: function(e){
         $(e.currentTarget).removeClass('hover');
+    },
+
+    //-----------------------------------
+    //Generate Form
+    //-----------------------------------
+    generate_form: function(params){
+        //This function generates form HTML elements, returns an HTML
+        //  string of the created elements
+        //Call the generate_form function...could be defined here, but it's
+        //  quite long so keeping it in a module makes this view function
+        //  easier to read
+        //NOTE: params is not used really yet, but later on may be used
+        //  to configure the form more
+        return OLArchitect.functions.generate_form({
+            model: this.model   
+        });
+    },
+
+    //-----------------------------------
+    //Generate HTML
+    //-----------------------------------
+    generate_html: function(params){
+        //Returns an HTML string to be used in generate_code() which contains
+        //  the JavaScipt code required to create the corresponding model 
+        //  e.g., if the map model is passed in this function will loop
+        //  through the model properties and return a string of javascript code.
+        if(params === undefined){
+            //num_tabs is the number of tabs to prepend to the outputted HTML
+            //By default, use two tabs
+            var num_tabs = 2;
+        }else{
+            if(params.num_tabs !== undefined){
+                var num_tabs = params.num_tabs;
+            }else{
+                var num_tabs = 2;
+            }
+        }
+        
+        //Store an array which we'll join to a string and return
+        var output_html = [];
+        var output_string = '';
+        var temp_key= '';
+        var temp_val = '';
+        var attr = undefined;
+
+        //Loop through all the attributes in the model and generate
+        //  HTML for it
+        for(attr in this.model.schema){
+            if(this.model.schema.hasOwnProperty(attr)){
+                //First, let's do some value checking.  If the value is
+                //  undefined or the current item is a 'header' element,
+                //  we won't use it
+                if(this.model.get(attr) !== undefined 
+                    && this.model.get(attr) !== 'undefined'){
+
+                    if( typeof(this.model.get(attr)) === 'string'){
+                        if( this.model.get(attr).search('header_') !== -1){
+                            //If the cur attribute is a header attribute, 
+                            //  skip this iteration and continue to to the
+                            //  next iteration
+                            continue;
+                        }
+                    }
+                    //We're good!
+                    //Add to the output_html
+                    if(this.model.schema[attr].get_html !== undefined){
+                        //For each item in the schema, set the 
+                        //  key as the attribute and the value as the return value
+                        //  of the get_html function.  If no get_html function is
+                        //  defined, then just use the string value (assume we
+                        //  don't have to do anything special, like add
+                        //      'new OpenLayers.LonLat(...,...)'
+                        output_html.push(
+                            '\t'.multiply(num_tabs)
+                            + attr + ': '
+                            + this.model.schema[attr].get_html(
+                                this.model.get(attr)      
+                            )
+                        );
+                    }else{
+                        //get_html function undefined, so assume we can just output
+                        //  the value
+                        //We also should do some string cleanup.  For now, just replace
+                        //  spaces with '_'
+                        //Get the key
+                        temp_key = '\t'.multiply(num_tabs)
+                            + attr + ': ';
+
+                        //Get the temp_val string
+                        //  Always make it a string
+                        temp_val = '"' + this.model.get(attr) + '"';
+
+                        //Make sure there are no spaces and
+                        temp_val = temp_val.replace(
+                            / /g, '_');
+
+                        //Check for true / false and int / floats
+                        //  Note: When checking for floats, make sure to replace
+                        //  '"' character
+                        if(temp_val === '"true"'){
+                            temp_val = true;
+                        }else if(temp_val === '"false"'){
+                            temp_val = false;
+                        }else if(
+                            '"' + parseInt(temp_val.replace('"',''), 10) + '"' 
+                            === temp_val){
+                            //If the parseInt to string is the same as the 
+                            //  original value, then it's an int
+                            temp_val = parseInt(temp_val.replace('"',''),10);
+                        }else if(
+                            '"' + parseFloat(temp_val.replace('"',''), 10) + '"'
+                            === temp_val){
+                            temp_val = parseFloat(temp_val.replace('"',''),10);
+                        }
+
+                        //Append the key and val to the output html
+                        output_html.push(
+                            temp_key + temp_val
+                        );
+                    }
+                }
+            }
+        }
+
+        //Done with loop, join the string and return it
+        //  Join using a comma and new line
+        output_string = output_html.join(',\n');
+        return output_string
     }
 })

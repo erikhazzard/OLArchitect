@@ -13,10 +13,11 @@
 //
 //============================================================================
 OLArchitect.models.classes.Controls.OverviewMap= Backbone.Model.extend({
-    name: 'OverviewMap',
-
     defaults: {
-        //Blah
+        name: 'OverviewMap',
+        type: undefined,
+        model_type: 'OverviewMap',
+        isBaseLayer: undefined
     }
 
 });
@@ -32,7 +33,7 @@ OLArchitect.models.classes.Controls.Collection = Backbone.Collection.extend({
     //This collection contains a list of all layer model classes
     model: function(attr, options){
         //Depending on the type of model the user wants to add, add it
-        switch(attrs.type){
+        switch(attrs.model_type){
         case 'OverviewMap':
             //do some stuff
             return new OLArchitect.models.classes.Controls.OverviewMap(

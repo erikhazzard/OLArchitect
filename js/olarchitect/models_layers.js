@@ -18,8 +18,7 @@ OLArchitect.models.classes.Layers.Google = Backbone.Model.extend({
     defaults: {
         name: 'Google Layer',
         type: undefined,
-        layer_type: 'Google',
-        layer_group: 'base_layers',
+        model_type: 'Google',
         isBaseLayer: undefined
         //Blah
     },
@@ -68,7 +67,7 @@ OLArchitect.models.classes.Layers.OSM = Backbone.Model.extend({
     defaults: {
         //Blah
         name: 'Open Street Map',
-        layer_type: 'OSM',
+        model_type: 'OSM',
         isBaseLayer: true
     },
     generate_html: OLArchitect.functions.generate_html
@@ -84,7 +83,7 @@ OLArchitect.models.classes.Layers.Collection = Backbone.Collection.extend({
     //This collection contains a list of all layer model classes
     model: function(attr, options){
         //Depending on the type of model the user wants to add, add it
-        switch(attrs.layer_type){
+        switch(attrs.model_type){
         case 'Google':
             //do some stuff
             return new OLArchitect.models.classes.Layers.Google(
