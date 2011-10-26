@@ -57,6 +57,9 @@ OLArchitect.views.classes.Map.Collection = Backbone.View.extend({
     //Render function
     //-----------------------------------
     render: function(){
+        //Clear out existing HTML
+        $(this.el).html('');
+        
         //Show this element
         $(this.el).css('display', 'block');
         //We need to create input elements for each key/value pair
@@ -108,6 +111,8 @@ OLArchitect.views.classes.Map.Collection = Backbone.View.extend({
         //We'll only ever update the first model in the collection (which is
         //  the current map configuration used by the user)
         this.collection.models[0].set(temp_obj);
+        //Call render
+        this.render();
     },
 
     //-----------------------------------

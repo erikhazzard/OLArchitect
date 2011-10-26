@@ -28,15 +28,6 @@
 OLArchitect.functions.generate_form = function( params ){
     //Store a local copy of the model
     var model = undefined;
-    //output_array will be an array of strings, each element a string
-    //  containing the form element.  It will then be .join('')'ed at the
-    //  end of this function and returned.
-    var output_array = [];
-            
-    //Variables we'll use later
-    var cur_el_id = undefined,
-        cur_obj = undefined,
-        cur_el_html = undefined;
 
     //Just do some tests to make sure this function was properly called
     if(params === undefined){
@@ -47,7 +38,7 @@ OLArchitect.functions.generate_form = function( params ){
     //  of the passed in parameter does not exist, it means they didn't pass
     //  in the right thing
     if(params.model === undefined && params.schema === undefined){
-        return false
+        return false;
     }
 
     //Now we can set up the schema
@@ -59,6 +50,16 @@ OLArchitect.functions.generate_form = function( params ){
         //They just passed in the model itself
         model = params;
     }
+    //output_array will be an array of strings, each element a string
+    //  containing the form element.  It will then be .join('')'ed at the
+    //  end of this function and returned.
+    var output_array = [];
+            
+    //Variables we'll use later
+    var cur_el_id = undefined,
+        cur_obj = undefined,
+        cur_el_html = undefined;
+
     
     //-----------------------------------
     //

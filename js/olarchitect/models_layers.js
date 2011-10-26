@@ -19,9 +19,12 @@ OLArchitect.models.classes.Layers.Google = Backbone.Model.extend({
         name: 'Google Layer',
         type: undefined,
         layer_type: 'Google',
+        layer_group: 'base_layers',
+        isBaseLayer: undefined
         //Blah
     },
     schema: {
+        //Type is the Google Maps Layer type
         type: {
             form_type: 'select',
             get_html: function(val){
@@ -33,6 +36,10 @@ OLArchitect.models.classes.Layers.Google = Backbone.Model.extend({
                 ['undefined','Street View'],
                 ['TERRAIN', 'Terrain / Physical']
             ]
+        },
+        isBaseLayer: {
+            form_type: 'boolean',
+            default_value: 'true'
         }
     },
 
@@ -62,6 +69,7 @@ OLArchitect.models.classes.Layers.OSM = Backbone.Model.extend({
         //Blah
         name: 'Open Street Map',
         layer_type: 'OSM',
+        isBaseLayer: true
     },
     generate_html: OLArchitect.functions.generate_html
 

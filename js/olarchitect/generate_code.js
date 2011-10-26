@@ -99,25 +99,21 @@ OLArchitect.functions.generate_code = function(app_object){
     final_output.push('//Create a function that will setup the map.  Call this function to create your map');
     final_output.push('//\te.x.: MAP_APP.init_function();');
     final_output.push('');
-    final_output.push('MAP_FUNCTION.init_function = function(){');
+    final_output.push('MAP_APP.init_function = function(){');
     final_output.push('\t//Create a local map object');
     final_output.push('\tvar map_object = new OpenLayers.Map({');
     final_output.push('\t\t//Define map options');
     //Get MAP config string
     //This may look a little intimidating, but it's not too complex:
-    //  -app_object is the passed in app view
-    //      -collection is the collection of models that the app view owns (for now,
-    //      only one model will exist within it)
-    //          -models[0] is accessing the first (and for now only) model of
-    //          the app collection
-    //              -get('map') is getting the map collection object
-    //                  -models[0] is getting the first (and only) model object
-    //                  of the map collection
-    //                      -generate_html(2) calls the generate_html() function
-    //                      of the model object and passes in 2, which is the
-    //                      number of tabs we want to prepend to the generated
-    //                      HTML
-    final_output.push(app_object.collection.models[0].get('map').models[0].generate_html(2));
+    //  -Call the generate_html function of the passed in app object (
+    //      OLArchitect.models.objects.app)
+    //      -Pass in the map model, an options_only flag of true so we only
+    //          get the options html, and 2 tabs prepended to each line
+    final_output.push(app_object.generate_model_html({
+        model: app_object.collection.models[0].get('map').models[0],
+        options_only: true,
+        num_tabs: 2
+    }));
     
     //Finish off the options
     final_output.push('\t});');
@@ -166,7 +162,11 @@ OLArchitect.functions.generate_code = function(app_object){
         
         //Add the HTML for the layer configuration to the final code output
         final_output.push(
-            layer_models[item].generate_html(2)
+            app_object.generate_model_html({
+                model: layer_models[item],
+                options_only: true,
+                num_tabs: 2
+            })
         );
 
         final_output.push('\t});');
@@ -175,14 +175,19 @@ OLArchitect.functions.generate_code = function(app_object){
     //Add layers to the map. 
     //  Note: we could do this in the above loop, but it's a little clearer
     //  to call map.addLayers and pass in all the layers at once.  
-    final_output.push('');
-    final_output.push('');
-    final_output.push('\t//---------------------------------------');
-    final_output.push('\t//Add layers to map');
-    final_output.push('\t//---------------------------------------');
-    final_output.push('\tmap_object.addLayers([');
-    final_output.push('\t\t' + layer_var_names.join(','));
-    final_output.push('\t])');
+    if(layer_var_names.length > 0){
+        final_output.push('');
+        final_output.push('');
+        final_output.push('\t//---------------------------------------');
+        final_output.push('\t//Add layers to map');
+        final_output.push('\t//---------------------------------------');
+        //Make sure they have at least one layer
+            final_output.push('\tmap_object.addLayers([');
+            final_output.push('\t\t' + layer_var_names.join(','));
+            final_output.push('\t]);');
+    }else{
+        final_output.push('\t//WARNING: You do not have any layers!');
+    }
 
 
 
@@ -194,6 +199,12 @@ OLArchitect.functions.generate_code = function(app_object){
     //-----------------------------------
     //We're done with our code, so end the script tag
     final_output.push('');
+    final_output.push(');');
+    final_output.push('//Everything is all set up!  Put all of this code at the');
+    final_output.push('//BOTTOM of your page before the closing body tag (</body>)');
+    final_output.push('');
+    final_output.push('//Call the map initialization function.  Note: You can call this yourself elsewhere');
+    final_output.push('MAP_APP.init_function();');
     final_output.push("</script>");
     final_output_string = final_output.join('\n');
     //Escape < and >

@@ -118,8 +118,16 @@ OLArchitect = {
         objects: {
             //Objects contain instaniated app classes. See above (models)
             //  for more info
-            //Only a single view for the app
-            app: undefined,
+            app: { 
+                //Only a single view for the app
+                //NOTE: This WILL be override when the app is instaniated.
+                //  However, before the app view is created models may try to
+                //  call this function, so let's define a blank one so we don't
+                //  get an error when they do (Any models added by default will
+                //  try to call this, but after the app is instantiated this
+                //  function will be replaced by a real function)
+                generate_code: function(){} 
+            },
             controls: {
                 collection: undefined,
                 overview_map: undefined
