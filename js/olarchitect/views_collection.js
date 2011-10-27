@@ -329,16 +329,19 @@ OLArchitect.views.classes.Collection = Backbone.View.extend({
                 object_var_names.push(cur_object_var_name);
                 //Add the HTML for the layer configuration to the final code output
                 //TODO: THIS
-                /*
+                console.log(this.collection.models[model].get('model_type').toLowerCase()
+                        + '_' 
+                        + this.collection.models[model].cid);
                 output_html.push(
                     OLArchitect.views.objects[
-                        this.collection.models[model].get('model_type').toLowerCase()
+                        this.collection_type + 's'][
+                        this.collection.models[model].get(
+                            'model_type').toLowerCase()
                         + '_' 
                         + this.collection.models[model].cid].generate_html({
                             num_tabs: num_tabs + 1   
                         })
                 );
-                */
                 output_html.push('\t});');
             }
 
