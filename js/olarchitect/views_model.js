@@ -165,7 +165,6 @@ OLArchitect.views.classes.Model= Backbone.View.extend({
         
         //Store an array which we'll join to a string and return
         var output_html = [];
-        var output_string = '';
         var temp_key= '';
         var temp_val = '';
         var attr = undefined;
@@ -251,7 +250,6 @@ OLArchitect.views.classes.Model= Backbone.View.extend({
 
         //Done with loop, join the string and return it
         //  Join using a comma and new line
-        output_string = output_html.join(',\n');
-        return output_string
+        return output_html.join(',\n');
     }
 })

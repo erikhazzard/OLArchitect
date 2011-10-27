@@ -307,17 +307,28 @@ OLArchitect.views.classes.Collection = Backbone.View.extend({
         }
         var output_html = [];
         var object_var_names = [];
+        //Setup tab strings. We'll want unindent and indent levels as well
+        var tab_string_unindent = '\t'.multiply(num_tabs-1);
         var tab_string = '\t'.multiply(num_tabs);
+        var tab_string_indent = '\t'.multiply(num_tabs+1);
 
+        output_html.push('');
+        output_html.push('\t//=======================================');
+        output_html.push('\t//Set up ' + this.collection_type + 's');
+        output_html.push('\t//=======================================');
+
+        //Loop through each model in this collection view's collection and
+        //  generate OpenLayers code for each layer / control in the collection
         for(model in this.collection.models){
             if(this.collection.models.hasOwnProperty(model)){
                 //Push a comment
-                output_html.push('\t//Create a ' + this.collection.models[model].get('model_type')
-                    + ' layer ');
-                var cur_object_var_name = 'layer_'
+                output_html.push('\t//Create a new ' + this.collection.models[model].get('model_type')
+                    + ' ' + this.collection_type);
+                var cur_object_var_name = this.collection_type + '_'
                     + this.collection.models[model].get('model_type').toLowerCase()
                     + '_' + this.collection.models[model].cid
-                //And then the layer creation string
+
+                //And then the model object (layer or control) creation string
                 output_html.push('\tvar '
                     + cur_object_var_name 
                     +' = new OpenLayers.Layer.'
@@ -325,13 +336,13 @@ OLArchitect.views.classes.Collection = Backbone.View.extend({
                     + '({'
                 );
 
-                //Add the layer variable name to the object_var_names array
+                //Add the variable name to the object_var_names array
                 object_var_names.push(cur_object_var_name);
-                //Add the HTML for the layer configuration to the final code output
-                //TODO: THIS
-                console.log(this.collection.models[model].get('model_type').toLowerCase()
-                        + '_' 
-                        + this.collection.models[model].cid);
+
+                //Add the HTML for the layer / control configuration to the 
+                //  final code output
+                //This calls the generate_html() function of the corresponding
+                //  model view 
                 output_html.push(
                     OLArchitect.views.objects[
                         this.collection_type + 's'][
@@ -343,24 +354,32 @@ OLArchitect.views.classes.Collection = Backbone.View.extend({
                         })
                 );
                 output_html.push('\t});');
-            }
-
-            //Add layers to the map. 
-            //  Note: we could do this in the above loop, but it's a little clearer
-            //  to call map.addLayers and pass in all the layers at once.  
-            if(object_var_names.length > 0){
+                //Add an empty line
                 output_html.push('');
-                output_html.push('\t//---------------------------------------');
-                output_html.push('\t//Add the previously created layers to map');
-                output_html.push('\t//---------------------------------------');
-                //Make sure they have at least one layer
-                    output_html.push('\tmap_object.addLayers([');
-                    output_html.push('\t\t' + object_var_names.join(','));
-                    output_html.push('\t]);');
-            }else{
-                output_html.push('\t//WARNING: You do not have any layers!');
             }
-
         }
+
+        //---------------------------
+        //Add objects to the map. 
+        //  Make sure they have at least one model
+        //---------------------------
+        if(object_var_names.length > 0){
+            output_html.push(tab_string_unindent
+                + '//---------------------------------------');
+            output_html.push(tab_string_unindent
+                + '//Add the ' + this.collection_type + 's to map');
+            output_html.push(tab_string_unindent
+                + '//---------------------------------------');
+                output_html.push(tab_string_unindent
+                    + 'map_object.addLayers([');
+                output_html.push(tab_string + object_var_names.join(
+                    ',\n' + tab_string));
+                output_html.push(tab_string_unindent
+                    + ']);');
+        }else{
+            output_html.push('\t//WARNING: You do not have any layers!');
+        }
+
+        return output_html.join('\n');
     }
 })

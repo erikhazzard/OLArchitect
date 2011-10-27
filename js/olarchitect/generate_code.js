@@ -85,29 +85,36 @@ OLArchitect.functions.generate_code = function(app_object){
     //First, build the MAP object
     //
     //-----------------------------------
-    final_output.push('//---------------------------------------');
+    final_output.push('//=======================================');
     final_output.push('//Define a global object so we can access the map state outside the init function');
-    final_output.push('//---------------------------------------');
+    final_output.push('//=======================================');
     final_output.push('var MAP_APP = { ');
     final_output.push('\tmap: undefined, ');
     final_output.push('\tinit_function: undefined');
     final_output.push('};');
     final_output.push('');
-    final_output.push('//---------------------------------------');
-    final_output.push('//Setup our map code');
-    final_output.push('//---------------------------------------');
-    final_output.push('//Create a function that will setup the map.  Call this function to create your map');
+    final_output.push('//=======================================');
+    final_output.push('//');
+    final_output.push('//Setup our init function and map code');
+    final_output.push('//');
+    final_output.push('//=======================================');
+    final_output.push('//Create a function that will setup the map.');
+    final_output.push('//\tCall this function to create your map:');
     final_output.push('//\te.x.: MAP_APP.init_function();');
     final_output.push('');
     final_output.push('MAP_APP.init_function = function(){');
-    final_output.push('\t//Create a local map object');
+    final_output.push('\t//=======================================');
+    final_output.push('\t//Setup Map');
+    final_output.push('\t//=======================================');
+    final_output.push("\t//Create a local map_object which we'll assign to our ");
+    final_output.push("\t//\tglobal MAP_INIT object");
     final_output.push('\tvar map_object = new OpenLayers.Map({');
-    final_output.push('\t\t//Define map options');
+    final_output.push('\t\t//Define the map options');
     //Get MAP config string
     //  -Call the generate_html function of the map view and prepend
     //      two tabs to each line output
     final_output.push(OLArchitect.views.objects.map.generate_html({
-        num_tabs: 1
+        num_tabs: 2
     }));
     
     //Finish off the options
@@ -117,21 +124,15 @@ OLArchitect.functions.generate_code = function(app_object){
     final_output.push("\t//\t to it in our gloabl MAP_APP object so we can access it outside of");
     final_output.push("\t//\t this function");
     final_output.push('\tMAP_APP.map = map_object;');
-    final_output.push('');
-    
 
     //-----------------------------------
     //
     //Add LAYERS
     //
     //-----------------------------------
-    final_output.push('\t//---------------------------------------');
-    final_output.push('\t//Set up layers');
-    final_output.push('\t//---------------------------------------');
-
     //Create layer objects HTML
     //TODO: Call the layer collection view generate_html function
-    OLArchitect.views.objects.layers.collection.generate_html();
+    final_output.push(OLArchitect.views.objects.layers.collection.generate_html());
     
 
     //-----------------------------------
@@ -140,12 +141,9 @@ OLArchitect.functions.generate_code = function(app_object){
     //
     //-----------------------------------
     if(control_models.length > 0){
-        final_output.push('\t//---------------------------------------');
-        final_output.push('\t//Set up controls');
-        final_output.push('\t//---------------------------------------');
-        //TODO: Call control collection view generate HTML function
+        final_output.push(
+            OLArchitect.views.objects.controls.collection.generate_html());
     }
-
 
     //-----------------------------------
     //
