@@ -66,7 +66,9 @@ OLArchitect.functions.generate_form = function( params ){
     //
     //-----------------------------------
     //Add a wrapper div
-    output_array.push("<div id='form_wrapper_" + model.name + "'>");
+    output_array.push("<div id='form_wrapper_" 
+        + model.get('name').toLowerCase().replace(' ','_')
+        + "' class='form_wrapper'>");
 
     //NOTE: Each input / select elemented generated must have a name
     //  property which is equal to the current key (attribute) being

@@ -19,7 +19,8 @@ OLArchitect.models.classes.Layers.Google = Backbone.Model.extend({
         name: 'Google Layer',
         type: undefined,
         model_type: 'Google',
-        isBaseLayer: undefined
+        isBaseLayer: undefined,
+        test: undefined
         //Blah
     },
     schema: {
@@ -39,6 +40,9 @@ OLArchitect.models.classes.Layers.Google = Backbone.Model.extend({
         isBaseLayer: {
             form_type: 'boolean',
             default_value: 'true'
+        },
+        test: {
+            form_type: 'string'
         }
     },
 

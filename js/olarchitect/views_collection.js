@@ -20,8 +20,8 @@ OLArchitect.views.classes.Collection = Backbone.View.extend({
         'mouseleave li': 'unhover_li',
         'mouseenter .config_item_container': 'hover_config_item',
         'mouseleave .config_item_container': 'unhover_config_item',
-        'mousedown .config_item_container': 'mousedown_config_item',
-        'mouseup .config_item_container': 'mouseup_config_item',
+        'mousedown .config_item_title': 'mousedown_config_item',
+        'mouseup .config_item_title': 'mouseup_config_item',
         //Make sure we remove the active class if they press mouse down 
         //  then leave the button
         'mouseleave .config_item_container': 'mouseup_config_item',
@@ -29,6 +29,7 @@ OLArchitect.views.classes.Collection = Backbone.View.extend({
         //Config item functions
         'click .config_item_remove': 'ui_remove_model',
         'click .new_config_item': 'create_new_model',
+        'click .config_item_title': 'toggle_config_item',
 
         'change input': 'update_data',
         'change select': 'update_data',
@@ -47,7 +48,9 @@ OLArchitect.views.classes.Collection = Backbone.View.extend({
     //  up the associated model
     initialize: function(){
         //Bind this context, pass in all of this view's functions
-        _.bindAll(this, 'render', 'unrender', 
+        _.bindAll(this, 
+            'get_model_identifier_string',    
+            'render', 'unrender', 
             'update_data',
             'change_layer_order',
             'generate_item_container_html',
@@ -55,6 +58,7 @@ OLArchitect.views.classes.Collection = Backbone.View.extend({
             'hover_li', 'unhover_li', 
             'hover_config_item', 'unhover_config_item', 
             'mousedown_config_item', 'mouseup_config_item', 
+            'toggle_config_item',
             'create_new_model', 'ui_remove_model',
             'generate_html'
             );
@@ -83,7 +87,14 @@ OLArchitect.views.classes.Collection = Backbone.View.extend({
         //this.model.bind('change', this.render);
     },
 
-
+    get_model_identifier_string: function(item){
+        //Returns a string used to identify the model
+        //  e.g. layer_google_1
+        var model_string = ''
+            + item.get('model_type').toLowerCase().replace(' ', '_')
+            + '_' + item.cid;
+        return model_string;
+    },
     //-----------------------------------
     //Generate item container HTML
     //-----------------------------------
@@ -92,17 +103,23 @@ OLArchitect.views.classes.Collection = Backbone.View.extend({
         //  that represents an individual item (item being a layer or control).
         //Clicking on the individual item will show full details for that
         //  layer or control
-        var ret_html = "<div class='config_item_container button'>"
-            +   "<span class='config_item_title'>"
+        var ret_html = "<div id='model_container_"
+            +       this.get_model_identifier_string(item)
+            +       "' class='config_item_container button'>"
+            +   "<div id='model_container_header_"
+            +       this.get_model_identifier_string(item)
+            +       "' class='config_item_title'>"
             +       item.get('name')  + "<span class='config_item_title_id'>"
             +           "(" + item.cid + ")" + "</span>"
-            +   "</span>"
+            +   "</div>"
             +   "<li class='config_item_remove' "
-            +   "id='config_item_for_" + item.cid + "' ></li>"
-            +   "<div class='config_item_inner_wrapper'>"
-            +       "<div id='config_item_inner_"
-            //Use cid, since the object does not yet have a real ID
-            +           item.cid + "' ></div>"
+            +   "id='config_item_for_" 
+            +       this.get_model_identifier_string(item)
+            +       "' ></li>"
+            +   "<div class='config_item_inner_wrapper' "
+            +       " id='model_content_"
+            +       this.get_model_identifier_string(item)
+            +       "' >"
             +   "</div>"   
             +"</div>";
         return ret_html;
@@ -189,17 +206,30 @@ OLArchitect.views.classes.Collection = Backbone.View.extend({
     //Update data (called whenever an input is changed)
     //-----------------------------------
     update_data: function(e){
+        //TODO: Really this should be done in the views_models so we don't
+        //  repeat ourselves.  The views_model will need to be changed 
+        //  slightly to work with the element it generates differently
+        //  as it currently captures no events when instaniated from a
+        //  collection
+        var target_model_id = $(e.currentTarget).parents()[2].id.replace(
+            'model_content_','');
+        var target_model = OLArchitect.views.objects[
+            this.collection_type + 's'][
+            target_model_id
+            ].model;
+
         //Create a temporary object literal to store the target element's
         //  name property as the key, and the value as the element's value
         //  because we can't use variables as keys when defining object
         //  literals (e.g. {varname: 'test'} doesn't work
         var temp_obj = {};
+
         //Create a new variable key by accessing a nonexistent (yet) property
         //  and passing in the element's value
         temp_obj[e.currentTarget['name']] = e.currentTarget.value;
         
         //Now, update the model and set the key:value we just defined above
-        this.model.set(temp_obj);
+        target_model.set(temp_obj);
     },
 
     //-----------------------------------
@@ -216,10 +246,10 @@ OLArchitect.views.classes.Collection = Backbone.View.extend({
         OLArchitect.views.objects[this.collection_type + 's'][
             item.get('model_type').toLowerCase()
             + '_' 
-            + item.cid
-            ] = new OLArchitect.views.classes.Model({
-                el: '#config_item_inner_'
-                    + item.cid,
+            + item.cid] 
+            = new OLArchitect.views.classes.Model({
+                el: '#model_content_'
+                    + this.get_model_identifier_string(item),
                 model: item
             });
 
@@ -263,9 +293,39 @@ OLArchitect.views.classes.Collection = Backbone.View.extend({
     },
 
     //-----------------------------------
+    //Toggle Config Item
+    //-----------------------------------
+    //Show / Hide the config item (an individual model of the collection)
+    toggle_config_item: function(e){
+        //Get the target model id
+        var target_model_id = e.currentTarget.id.replace(
+            'model_container_header_','');
+
+        //Get the related view
+        var target_view = OLArchitect.views.objects[
+            this.collection_type + 's'][
+            target_model_id];
+
+        //The target element we want to toggle is the model
+        //  content div, not the entire model container div
+        var target_el = '#model_content_' + target_model_id;
+
+        //Render the target view
+        if($(target_el).css('display') !== 'block'){
+            target_view.render();
+        }else{
+            target_view.unrender();
+        }
+    },
+
+    //-----------------------------------
     //Remove Config Item
     //-----------------------------------
     ui_remove_model: function(e){
+        //If the remove button is clicked, stop all other events from
+        //  propagating - we dont want to toggle the model view if they
+        //  tried to remove it
+        e.stopPropagation();
         //Get the target model based on the item the user clicked
         var cur_model = this.collection._byCid[
             e.currentTarget.id.replace('config_item_for_', '')];

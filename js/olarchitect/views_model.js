@@ -52,6 +52,15 @@ OLArchitect.views.classes.Model= Backbone.View.extend({
             return false;
         }
 
+        //We don't have to expect the caller to pass in an el, so if they
+        //  don't then build one.  Assume the ID will look like:
+        //      config_item_inner_TYPE_CID 
+        if(this.el === undefined){
+            this.el = '#model_content_'
+                + this.model.get('model_type').toLowerCase().replace(' ', '_')
+                + '_' + this.model.cid;
+        }
+
         //Whenever a model is changed, called render
         this.model.bind('change', this.render);
 
@@ -64,7 +73,7 @@ OLArchitect.views.classes.Model= Backbone.View.extend({
     render: function(){
         //Clear out existing HTML
         $(this.el).html('');
-        
+
         //Show this element
         $(this.el).css('display', 'block');
         //We need to create input elements for each key/value pair
@@ -93,6 +102,8 @@ OLArchitect.views.classes.Model= Backbone.View.extend({
     unrender: function(){
         //get rid of all elements in the configuration div
         $(this.el).empty();
+        //Set the target element's display to none
+        $(this.el).css('display', 'none');
     },
 
     //-----------------------------------
@@ -213,12 +224,19 @@ OLArchitect.views.classes.Model= Backbone.View.extend({
                             + attr + ': ';
 
                         //Get the temp_val string
-                        //  Always make it a string
-                        temp_val = '"' + this.model.get(attr) + '"';
+                        //  Make sure its a string
+                        temp_val = '' + this.model.get(attr);
 
                         //Make sure there are no spaces and
+                        //  and do a little regex
                         temp_val = temp_val.replace(
-                            / /g, '_');
+                            / /g, '_').replace(
+                            /[^a-zA-Z0-9_.]/g,'');
+
+                        //Surround the value with quotes, since we assume it's
+                        //  a string.  We'll check for true / false / int /
+                        //  float below
+                        temp_val = '"' + temp_val + '"';
 
                         //Check for true / false and int / floats
                         //  Note: When checking for floats, make sure to replace

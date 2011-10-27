@@ -106,7 +106,7 @@ OLArchitect.functions.generate_code = function(app_object){
     final_output.push('\t//=======================================');
     final_output.push('\t//Setup Map');
     final_output.push('\t//=======================================');
-    final_output.push("\t//Create a local map_object which we'll assign to our ");
+    final_output.push("\t//Create a local map_object which we will assign to our ");
     final_output.push("\t//\tglobal MAP_INIT object");
     final_output.push('\tvar map_object = new OpenLayers.Map({');
     final_output.push('\t\t//Define the map options');
