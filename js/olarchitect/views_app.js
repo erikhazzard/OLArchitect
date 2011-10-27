@@ -89,6 +89,7 @@ OLArchitect.views.classes.App = Backbone.View.extend({
             //--------------------
             OLArchitect.models.objects.controls = 
                 new OLArchitect.models.classes.Controls.Collection()
+
             //Setup the view object
             OLArchitect.views.objects.controls.collection 
                 = new OLArchitect.views.classes.Collection({
@@ -102,18 +103,19 @@ OLArchitect.views.classes.App = Backbone.View.extend({
             OLArchitect.models.objects.layers = 
                 new OLArchitect.models.classes.Layers.Collection()
 
-            //Now, add some default layers
-            //
-            //Add a google maps layer 
-            OLArchitect.models.objects.layers.add(
-                new OLArchitect.models.classes.Layers.Google());
-
             //Setup the view object
             OLArchitect.views.objects.layers.collection 
                 = new OLArchitect.views.classes.Collection({
                     el: '#configuration_options_layers',
                     collection: OLArchitect.models.objects.layers
                 }); 
+            //NOTE: Setup view BEFORE adding default individual layers
+            //  so the 'add' event is bound and called
+            
+            //Now, add some default layers
+            //Add a google maps layer 
+            OLArchitect.models.objects.layers.add(
+                new OLArchitect.models.classes.Layers.Google());
 
             //---------------------------
             //Set up THIS Application's collection object.  It contains
@@ -191,7 +193,12 @@ OLArchitect.views.classes.App = Backbone.View.extend({
 
         //NOTE: All the collection views have been created, so we can
         //  render the target view
-        OLArchitect.views.objects[target_view].collection.render();
+        if(target_view.search(/map/gi) === -1){
+            //Layers and controls have collections, but map does not
+            OLArchitect.views.objects[target_view].collection.render();
+        }else{
+            OLArchitect.views.objects[target_view].render();
+        }
     },
 
     //-----------------------------------

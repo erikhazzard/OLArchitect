@@ -104,12 +104,12 @@ OLArchitect = {
             app: undefined,
             controls: {
                 collection: undefined,
-                overview_map_cX: undefined
+                overview_map_cID: undefined
                 //etc...
             },
             layers: {
                 collection: undefined,
-                google_cX: undefined
+                google_cID: undefined
                 //etc...
             },
             //There is only a single view for the map

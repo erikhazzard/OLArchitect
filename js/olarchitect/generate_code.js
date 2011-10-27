@@ -106,9 +106,8 @@ OLArchitect.functions.generate_code = function(app_object){
     //Get MAP config string
     //  -Call the generate_html function of the map view and prepend
     //      two tabs to each line output
-    console.log(map_models);
     final_output.push(OLArchitect.views.objects.map.generate_html({
-        num_tabs: 2
+        num_tabs: 1
     }));
     
     //Finish off the options
@@ -130,102 +129,21 @@ OLArchitect.functions.generate_code = function(app_object){
     final_output.push('\t//Set up layers');
     final_output.push('\t//---------------------------------------');
 
-    //Create an array which will consist of every layer variable name
-    //  which we'll use to add layers to the map after looping through
-    //  all the layers
-    //Note: this is already defined above, but define it here
-    //  for clarity
-    layer_var_names = [];
-
     //Create layer objects HTML
-    for(item in layer_models){
-        //Push a comment
-        final_output.push('\t//Create a ' + layer_models[item].get('model_type')
-            + ' layer ');
-        var cur_layer_var_name = 'layer_'
-            + layer_models[item].get('model_type').toLowerCase()
-            + '_' + layer_models[item].cid
-        //And then the layer creation string
-        final_output.push('\tvar '
-            + cur_layer_var_name 
-            +' = new OpenLayers.Layer.'
-            + layer_models[item].get('model_type')
-            + '({'
-        );
-
-        //Add the layer variable name to the layer_var_names array
-        layer_var_names.push(cur_layer_var_name);
-        
-        //Add the HTML for the layer configuration to the final code output
-        //TODO: THIS
-        final_output.push(
-            OLArchitect.views.objects.___.generate_model_html({
-                num_tabs: 2
-            })
-        );
-
-        final_output.push('\t});');
-    }
-
-    //Add layers to the map. 
-    //  Note: we could do this in the above loop, but it's a little clearer
-    //  to call map.addLayers and pass in all the layers at once.  
-    if(layer_var_names.length > 0){
-        final_output.push('');
-        final_output.push('\t//---------------------------------------');
-        final_output.push('\t//Add the previously created layers to map');
-        final_output.push('\t//---------------------------------------');
-        //Make sure they have at least one layer
-            final_output.push('\tmap_object.addLayers([');
-            final_output.push('\t\t' + layer_var_names.join(','));
-            final_output.push('\t]);');
-    }else{
-        final_output.push('\t//WARNING: You do not have any layers!');
-    }
+    //TODO: Call the layer collection view generate_html function
+    OLArchitect.views.objects.layers.collection.generate_html();
+    
 
     //-----------------------------------
     //
     //Add Controls
     //
     //-----------------------------------
-    final_output.push('');
     if(control_models.length > 0){
         final_output.push('\t//---------------------------------------');
         final_output.push('\t//Set up controls');
         final_output.push('\t//---------------------------------------');
-
-        control_var_names = [];
-
-        //Create control objects HTML
-        for(item in control_models){
-            //Push a comment
-            final_output.push('\t//Create a ' + control_models[item].get('model_type')
-                + ' control ');
-            var cur_control_var_name = 'control_'
-                + control_models[item].get('model_type').toLowerCase()
-                + '_' + control_models[item].cid
-            //And then the control creation string
-            final_output.push('\tvar '
-                + cur_control_var_name 
-                +' = new OpenLayers.Layer.'
-                + control_models[item].get('model_type')
-                + '({'
-            );
-
-            //Add the control variable name to the control_var_names array
-            control_var_names.push(cur_control_var_name);
-            
-            //Add the HTML for the control configuration to the final code output
-            final_output.push(
-                app_object.generate_model_html({
-                    model: control_models[item],
-                    options_only: true,
-                    num_tabs: 2
-                })
-            );
-
-            final_output.push('\t});');
-        }
+        //TODO: Call control collection view generate HTML function
     }
 
 
