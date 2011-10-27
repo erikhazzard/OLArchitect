@@ -181,11 +181,11 @@ OLArchitect.views.classes.Collection = Backbone.View.extend({
             //Create the 'Add new control' button
             $(target_el).append(
                 "<div class='config_item_container button new_config_item'>"
-                +   "<span class='config_item_title'>"
+                +   "<div>"
                 +       "New " 
                 +           this.collection_type[0].toUpperCase()
                 +           this.collection_type.substring(1)
-                +   "</span>"
+                +   "</div>"
                 + "</div>"
             );
             
@@ -298,6 +298,7 @@ OLArchitect.views.classes.Collection = Backbone.View.extend({
     //Show / Hide the config item (an individual model of the collection)
     toggle_config_item: function(e){
         //Get the target model id
+        console.log($(e.currentTarget));
         var target_model_id = e.currentTarget.id.replace(
             'model_container_header_','');
 
@@ -305,6 +306,7 @@ OLArchitect.views.classes.Collection = Backbone.View.extend({
         var target_view = OLArchitect.views.objects[
             this.collection_type + 's'][
             target_model_id];
+
 
         //The target element we want to toggle is the model
         //  content div, not the entire model container div
@@ -327,8 +329,11 @@ OLArchitect.views.classes.Collection = Backbone.View.extend({
         //  tried to remove it
         e.stopPropagation();
         //Get the target model based on the item the user clicked
-        var cur_model = this.collection._byCid[
-            e.currentTarget.id.replace('config_item_for_', '')];
+        var cur_model_name = e.currentTarget.id.replace('config_item_for_', 
+            '');
+        var cur_model = OLArchitect.views.objects[
+                    this.collection_type + 's'][
+                    cur_model_name].model;
         var that = this;
         //Make sure user wants to remove the item
         smoke.confirm('Are you sure you want to remove '
