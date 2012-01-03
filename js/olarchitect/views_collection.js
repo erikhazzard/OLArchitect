@@ -181,7 +181,7 @@ OLArchitect.views.classes.Collection = Backbone.View.extend({
             //Create the 'Add new control' button
             $(target_el).append(
                 "<div class='config_item_container button new_config_item'>"
-                +   "<div>"
+                +   "<div id='new_" + this.collection_type + "_button' >"
                 +       "New " 
                 +           this.collection_type[0].toUpperCase()
                 +           this.collection_type.substring(1)
@@ -355,10 +355,27 @@ OLArchitect.views.classes.Collection = Backbone.View.extend({
     create_new_model: function(e){
         //This will add a new layer / control item
         //Get the target model based on the item the user clicked
-        
+        //  will be either a Control or Layer
+        var target_class = undefined;
+
+        //target_type is the type of control or layer to create 
+        //  (e.g., a Goolge Layer or an OverviewMap control)
+        var target_type = undefined;
+
+        if(e.target.id.search(/layer/gi) !== -1){
+            //Layer
+            target_class = OLArchitect.models.classes.Layers;
+        }else if(e.target.id.search(/control/gi) !== -1){
+            //Control
+            target_class = OLArchitect.models.classes.Controls;
+        }
+
         //TODO: Get the proper layer / control object
+        //Get the Type of layer or control to add
+        target_type = 'Google';
+        
         //For now, just use a google layer
-        var new_item = new OLArchitect.models.classes.Layers.Google({});
+        var new_item = new target_class[target_type]({});
         this.collection.add(new_item);
     },
 
