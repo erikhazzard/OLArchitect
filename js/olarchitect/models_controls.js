@@ -15,9 +15,44 @@
 OLArchitect.models.classes.Controls.OverviewMap= Backbone.Model.extend({
     defaults: {
         name: 'OverviewMap',
-        type: undefined,
         model_type: 'OverviewMap',
-        isBaseLayer: undefined
+    },
+
+    schema: {
+        autoPan: {
+            form_type: 'boolean',
+            default_value: 'false'
+        },
+        displayClass: {
+            default_value: 'my_css_class',
+            form_type: 'string'
+        },
+        div: {
+            default_value: 'my_div',
+            form_type: 'string'
+        },
+        minRatio: {
+            default_value: '8',
+            form_type: 'int'
+        },
+        maxRatio: {
+            default_value: '32',
+            form_type: 'int'
+        },
+        minRectSize: {
+            default_value: '15',
+            form_type: 'int'
+        },
+        size: {
+            get_html: function(val){
+                return 'new OpenLayers.Size(' + val + ')';
+            },
+            default_value: '180,90',
+            form_type: 'string'
+        },
+        title: {
+            form_type: 'string'
+        }
     }
 
 });

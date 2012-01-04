@@ -130,8 +130,24 @@ OLArchitect.views.classes.App = Backbone.View.extend({
 
         }
         //We're done loading default values
+        //-------------------------------
+        //Setup the view for adding new objects
+        //-------------------------------
+        OLArchitect.views.objects.new_ol_layer = 
+            new OLArchitect.views.classes.NewOLObject({
+                base_type: 'layers',
+                collection: OLArchitect.models.objects.layers
+            });
 
+        OLArchitect.views.objects.new_ol_control = 
+            new OLArchitect.views.classes.NewOLObject({
+                base_type: 'controls',
+                collection: OLArchitect.models.objects.controls
+            });
+
+        //-------------------------------
         //Generate the starting code based on the current app configuration
+        //-------------------------------
         this.generate_code();
     },
 
@@ -230,3 +246,135 @@ OLArchitect.views.classes.App = Backbone.View.extend({
     }
 });
 
+
+//============================================================================
+//
+//App View
+//
+//============================================================================
+OLArchitect.views.classes.NewOLObject = Backbone.View.extend({
+    //The app lives in the body tag
+    el: '#popup_container_wrapper',
+    
+    //-----------------------------------
+    //Set up events when user interacts with app buttons
+    //-----------------------------------
+    events: {
+        //Each of the buttons will show the corresponding view. Each button
+        //  will call the same function, and depending on the type of
+        //  button they click the corresponding view will get called
+        //TODO: Save / export buttons
+        'click #popup_close': 'unrender'
+    },
+
+    //-----------------------------------
+    //Events:
+    //-----------------------------------
+    initialize: function(){
+        _.bindAll(this, 
+            'render',
+            'unrender'
+            );
+        var that = this;
+
+        //Bind an event to the body to call unrender when escape is pressed
+        //  NOTE: This should be done in the events array
+        $('body').keyup('escape', function(){ that.unrender(); });
+        //-----------------------------------
+        //Set the associated model.  This model is just a model that contains
+        //  all the other models: Map, Layers, Controls, etc.
+        //-----------------------------------
+        //base type will be either control or layer
+        if(this.options.base_type === undefined){
+            console.log('ERROR: No base_type passed into NewOLObject');
+            return false;
+        }
+        if(this.collection === undefined){
+            console.log('ERROR: No collection passed into NewOLObject');
+            return false;
+        }
+    },
+    //-----------------------------------
+    //Render function
+    //-----------------------------------
+    render: function(){
+        var cur_type,
+            that = this,
+            base_type = this.options.base_type.capitalize(),
+            cur_type_html = '',
+            target_class = '';
+
+        //First remove all unnecessary stuff
+        $('#popup').empty();
+
+        //Show the popup
+        $(this.el).css('display', 'block');
+
+        //Show the appropriate types for either controls or layers
+        $('#popup_title').html(
+            'New ' + base_type);
+
+        //Note: We could cache this so it doesn't get regenerated at ever
+        //  render() call
+        for(cur_type in OLArchitect.models.classes[base_type]){
+            //Make sure we're not looking at a collection
+            if(cur_type.search(/collection/gi) === -1){
+                //Create HTML for the current type - will be a button
+                cur_type_html += '<div class="ol_object_type_wrapper">'
+                    + '<li class="button" '
+                    +       ' title="' + cur_type + '" >'
+                    +       cur_type
+                    +   '</li>'
+                    + '</div>';
+            }
+        }
+
+        //Set the HTML
+        $('#popup').html(
+            $('#popup').html() + cur_type_html);
+        
+        //-------------------------------
+        //Determine the model class to use based on base_type
+        //  (either a layer or control)
+        //-------------------------------
+        if(base_type === 'Layers'){
+            //Layer
+            target_class = OLArchitect.models.classes.Layers;
+        }else if(base_type === 'Controls'){
+            //Control
+            target_class = OLArchitect.models.classes.Controls;
+        }
+
+        //-------------------------------
+        //Attach events to each type button
+        //-------------------------------
+        $(this.el).delegate('#popup li', 'click', function(e){
+            //Note: use that, since this refers to the clicked element
+            that.collection.add( 
+                //Add a new object to this view's collection (either layers or
+                //  controls)
+                new target_class[
+                    $(this).html()
+                ]({}) 
+            );
+
+            //Call unrender(), we're done here
+            that.unrender();
+        });
+        
+    },
+    //-----------------------------------
+    //UnRender function
+    //-----------------------------------
+    unrender: function(){
+        //Hide the popup wrapper
+        $(this.el).css('display', 'none');
+
+        //Remove events that we delegated above
+        $(this.el).undelegate('#popup li', 'click');
+
+        //Get rid of all the html in the popup
+        $('#popup').empty();
+    }
+
+})

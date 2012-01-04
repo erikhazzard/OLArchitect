@@ -96,7 +96,10 @@ OLArchitect = {
             //  to a view, NOT an object literal like the rest of the objects.
             App: undefined,
             Collection: undefined,
-            Model: undefined
+            Model: undefined,
+            //NewOLObject is used to display the types (for either controls
+            //  or layers) when the user adds a new control or layer)
+            NewOLObject: undefined
         },
         objects: {
             //Objects contain instaniated app classes. See above (models)
@@ -113,7 +116,11 @@ OLArchitect = {
                 //etc...
             },
             //There is only a single view for the map
-            map: undefined 
+            map: undefined,
+
+            //Views for the new control and layer options
+            new_ol_control: undefined,
+            new_ol_layer: undefined
         }
     },
     
@@ -133,6 +140,11 @@ OLArchitect = {
 String.prototype.multiply = function(n) {
     return Array.prototype.join.call({length:n+1}, this);
 };
+
+String.prototype.capitalize= function(str){
+    return (this.slice(0,1).toUpperCase() 
+        + this.toLowerCase().slice(1,this.length));
+}
 
 //============================================================================
 //

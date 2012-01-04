@@ -27,6 +27,7 @@
 
 /*Styles*/
 @light_box_shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+@dark_box_shadow: 0 0 22px rgba(0, 0, 0, 0.9);
 .rounded_corners(@radius: 3px){
     border-radius: @radius !important;
     -webkit-border-radius: @radius !important;
@@ -583,23 +584,29 @@ input:focus, textarea:focus {
  * Popup
  * ======================================================================== */
 #popup_container_wrapper{
-    .rounded_corners(3px);
-    box-shadow: @light_box_shadow;
-    -moz-box-shadow: @light_box_shadow;
-    -webkit-box-shadow: @light_box_shadow;
-    border: 1px solid #ABABAB;
-    bottom:20%;
+    background:rgba(255,255,255,.8);
+    bottom:0;
     display:none;
+    left:0;
+    position:absolute;
+    right:0;
+    top:0;
+    z-index:999;
+}
+#popup_container {
+    .rounded_corners(3px);
+    box-shadow: @dark_box_shadow;
+    -moz-box-shadow: @dark_box_shadow;
+    -webkit-box-shadow: @dark_box_shadow;
+    border: 1px solid #ABABAB;
+    bottom:10%;
     left:20%;
     position:absolute;
     right:20%;
-    top: 20%;
+    top: 15%;
     z-index:999;
 }
-    #popup_container_wrapper h2 {
-        padding:10px 0 0 5px;
-    }
-    #popup_container{
+    #popup_container_inner {
         .rounded_corners(3px);
         background: #eeeeee;
         border:1px solid #ffffff;
@@ -609,18 +616,35 @@ input:focus, textarea:focus {
         right:0;
         top:0;
     }
+    #popup_container_wrapper h2 {
+        padding:10px 0 0 5px;
+    }
     #popup { 
         background: @inner_content_background_color;
         border:1px solid #bcbcbc;
         bottom: 0;
         left:0;
         margin:5px;
-        overflow:hidden;
         position: absolute;
         right:0;
         top: @left_toolbox_tabs_height + 5;
     }
 
+/* ========================================================================    
+ * OL Type buttons in popup
+ * ======================================================================== */
+.ol_object_type_wrapper {
+    height: auto !important;
+    font-size:1em !important;
+    margin:.5em 0 .5em 5% !important;
+    min-height:38px !important;
+    padding: 0 0 0 0 !important;
+    position:relative;
+    width:88% !important;
+}
+.ol_object_type_wrapper li{
+    width: 100% !important;
+}
 /* ========================================================================    
  *
  * REUSABLE CLASSES 
@@ -644,6 +668,7 @@ input:focus, textarea:focus {
 .grey_text a { color:#909090; }
 .grey_text a:hover { color:#707070; text-decoration:underline; }
 
+.margin_top { margin:4em 0 0 0; }
 /* ========================================================================    
  * Google-like buttons
  * ======================================================================== */

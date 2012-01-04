@@ -298,7 +298,6 @@ OLArchitect.views.classes.Collection = Backbone.View.extend({
     //Show / Hide the config item (an individual model of the collection)
     toggle_config_item: function(e){
         //Get the target model id
-        console.log($(e.currentTarget));
         var target_model_id = e.currentTarget.id.replace(
             'model_container_header_','');
 
@@ -306,7 +305,6 @@ OLArchitect.views.classes.Collection = Backbone.View.extend({
         var target_view = OLArchitect.views.objects[
             this.collection_type + 's'][
             target_model_id];
-
 
         //The target element we want to toggle is the model
         //  content div, not the entire model container div
@@ -353,30 +351,24 @@ OLArchitect.views.classes.Collection = Backbone.View.extend({
     //Create config item
     //-----------------------------------
     create_new_model: function(e){
-        //This will add a new layer / control item
-        //Get the target model based on the item the user clicked
-        //  will be either a Control or Layer
-        var target_class = undefined;
-
+        //This is called whenever the user clicked the 'New' button
+        
         //target_type is the type of control or layer to create 
         //  (e.g., a Goolge Layer or an OverviewMap control)
-        var target_type = undefined;
+        var target_type = undefined,
+            target_id = e.delegateTarget.id;
 
-        if(e.target.id.search(/layer/gi) !== -1){
+        if(target_id.search(/layer/gi) !== -1){
             //Layer
-            target_class = OLArchitect.models.classes.Layers;
-        }else if(e.target.id.search(/control/gi) !== -1){
+            target_type = 'layer';
+        }else if(target_id.search(/control/gi) !== -1){
             //Control
-            target_class = OLArchitect.models.classes.Controls;
+            target_type = 'control';
         }
 
-        //TODO: Get the proper layer / control object
-        //Get the Type of layer or control to add
-        target_type = 'Google';
-        
-        //For now, just use a google layer
-        var new_item = new target_class[target_type]({});
-        this.collection.add(new_item);
+        //  Render the associated view that allows user to pick the 
+        //  type they want to add
+        OLArchitect.views.objects['new_ol_' + target_type].render();
     },
 
     //-----------------------------------
